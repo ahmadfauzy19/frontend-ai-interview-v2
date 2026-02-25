@@ -4,10 +4,11 @@ import { TextfieldComponent } from '../../components/TextfieldComponent';
 import Navbar from '../../layout/navbar';
 import useLogin from './Auth.hooks';
 import { ButtonComponent } from '../../components/ButtonComponent';
+import { FormProvider } from 'react-hook-form';
 
 const AuthPage = () => {
   const theme = useTheme();
-  const { method, handleSubmit } = useLogin();
+  const { method, onSubmit } = useLogin();
 
   return (
     <Stack>
@@ -74,44 +75,46 @@ const AuthPage = () => {
               Login
             </Typography>
           </Box>
-          <Stack gap={1}>
-            <TextfieldComponent
-              control={method.control}
-              name="username"
-              label="Username or Email"
-              type="text"
-              placeholder="Enter your username/email"
-              required
-            />
-            <TextfieldComponent
-              control={method.control}
-              name="password"
-              label="Password"
-              type="password"
-              placeholder="Enter your password"
-              required
-            />
-            <Link
-              href="/forgot-password"
-              underline="none"
-              sx={{
-                fontSize: '14px',
-                display: 'flex',
-                justifyContent: 'flex-end',
-                color: theme.palette.error.main,
-              }}
-            >
-              Forgot password?
-            </Link>
-            <ButtonComponent
-              variant="contained"
-              size="small"
-              sx={{ textTransform: 'uppercase' }}
-              onClick={handleSubmit}
-            >
-              Login
-            </ButtonComponent>
-          </Stack>
+          <FormProvider {...method}>
+            <Stack gap={1}>
+              <TextfieldComponent
+                control={method.control}
+                name="username"
+                label="Username or Email"
+                type="text"
+                placeholder="Enter your username/email"
+                required
+              />
+              <TextfieldComponent
+                control={method.control}
+                name="password"
+                label="Password"
+                type="password"
+                placeholder="Enter your password"
+                required
+              />
+              <Link
+                href="/forgot-password"
+                underline="none"
+                sx={{
+                  fontSize: '14px',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  color: theme.palette.error.main,
+                }}
+              >
+                Forgot password?
+              </Link>
+              <ButtonComponent
+                variant="contained"
+                size="small"
+                sx={{ textTransform: 'uppercase' }}
+                onClick={method.handleSubmit(onSubmit)}
+              >
+                Login
+              </ButtonComponent>
+            </Stack>
+          </FormProvider>
           <Divider
             flexItem
             sx={{ backgroundColor: theme.palette.text.secondary }}
