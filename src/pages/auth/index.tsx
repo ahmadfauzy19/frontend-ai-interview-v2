@@ -1,7 +1,7 @@
 import { Box, Divider, Link, Stack, Typography, useTheme } from '@mui/material';
 import assets from '../../assets';
 import { ButtonComponent } from '../../components/ButtonComponent';
-import { TextfieldComponent } from '../../components/TextfieldComponent';
+import { TextfieldComponent } from '../../components/Form/TextfieldComponent';
 import Navbar from '../../layout/navbar';
 import useLogin from './Auth.hooks';
 

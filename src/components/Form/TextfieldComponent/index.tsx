@@ -321,7 +321,7 @@ export const TextfieldComponent = <T extends FieldValues>({
   };
 
   const validationRules: any = {
-    required: required ? `${label || 'Field'} wajib diisi` : false,
+    required: required ? `${label || 'Field'} is required` : false,
     validate: validationRegex
       ? {
           pattern: (value: any) => {
