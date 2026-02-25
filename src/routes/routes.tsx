@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import MainLayout from '../layout/main';
-import { getUserAuth } from '../utils/authUtils';
 import ProtectedRoute from './ProtectedRoutes';
 
 const AuthPage = React.lazy(() => import('../pages/auth'));
@@ -9,7 +9,7 @@ const InterviewPage = React.lazy(() => import('../pages/interviews'));
 const NotFoundPage = React.lazy(() => import('../pages/fallback/not-found'));
 
 const AppRoutes = () => {
-  const isAuthenticated = getUserAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <Routes>

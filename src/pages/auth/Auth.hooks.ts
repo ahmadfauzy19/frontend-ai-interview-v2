@@ -1,10 +1,12 @@
 import { useForm } from 'react-hook-form';
-import type { LoginForm } from './Auth.interfaces';
 import { useNavigate } from 'react-router-dom';
-import { storageService } from '../../utils/storageUtils';
+import { useAuth } from '../../context/AuthContext';
+import type { LoginForm } from './Auth.interfaces';
 
 const useLogin = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+
   const method = useForm<LoginForm>({
     defaultValues: {
       username: '',
@@ -17,8 +19,7 @@ const useLogin = () => {
     const watchedValues = method.watch();
     console.log('values: ', watchedValues);
 
-    storageService.set('uid', {
-      isLogin: true,
+    login({
       username: watchedValues.username,
     });
 

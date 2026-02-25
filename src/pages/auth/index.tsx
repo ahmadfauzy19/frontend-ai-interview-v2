@@ -1,10 +1,9 @@
 import { Box, Divider, Link, Stack, Typography, useTheme } from '@mui/material';
 import assets from '../../assets';
+import { ButtonComponent } from '../../components/ButtonComponent';
 import { TextfieldComponent } from '../../components/TextfieldComponent';
 import Navbar from '../../layout/navbar';
 import useLogin from './Auth.hooks';
-import { ButtonComponent } from '../../components/ButtonComponent';
-import { FormProvider } from 'react-hook-form';
 
 const AuthPage = () => {
   const theme = useTheme();
@@ -75,7 +74,7 @@ const AuthPage = () => {
               Login
             </Typography>
           </Box>
-          <FormProvider {...method}>
+          <form onSubmit={method.handleSubmit(onSubmit)}>
             <Stack gap={1}>
               <TextfieldComponent
                 control={method.control}
@@ -109,12 +108,12 @@ const AuthPage = () => {
                 variant="contained"
                 size="small"
                 sx={{ textTransform: 'uppercase' }}
-                onClick={method.handleSubmit(onSubmit)}
+                type="submit"
               >
                 Login
               </ButtonComponent>
             </Stack>
-          </FormProvider>
+          </form>
           <Divider
             flexItem
             sx={{ backgroundColor: theme.palette.text.secondary }}
