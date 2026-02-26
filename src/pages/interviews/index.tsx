@@ -1,9 +1,9 @@
-import InterviewCardLoading from '@/components/InterviewCardLoading';
+import InterviewCardLoading from '@/pages/interviews/components/InterviewCardLoading';
 import { Box, Stack, Typography } from '@mui/material';
-import CreateInterviewCard from '../../components/CreateInterviewCard';
-import InterviewCard from '../../components/InterviewCard';
+import CreateInterviewCard from './components/CreateInterviewCard';
+import InterviewCard from './components/InterviewCard';
+import InterviewModal from './components/InterviewModal';
 import useInterviews from './Interviews.hooks';
-import InterviewModal from './components/interview-modal';
 
 const InterviewsPage = () => {
   const { openModal, handleOpenModal, interviewData, isLoading } =

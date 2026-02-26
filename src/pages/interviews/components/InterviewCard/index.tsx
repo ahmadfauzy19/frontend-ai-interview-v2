@@ -1,7 +1,7 @@
 import type { Interviews } from '@/pages/interviews/Interviews.interfaces';
 import { Icon } from '@iconify/react';
 import { Box, Typography, useTheme } from '@mui/material';
-import { ButtonComponent } from '../ButtonComponent';
+import { ButtonComponent } from '../../../../components/ButtonComponent';
 
 const InterviewCard = ({ data }: { data: Interviews }) => {
   const theme = useTheme();
