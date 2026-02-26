@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import type { LoginForm } from './Auth.interfaces';
+import { useAuth } from '@/context/AuthContext';
+import type { LoginForm } from '../Auth.interfaces';
 
 const useLogin = () => {
   const navigate = useNavigate();
@@ -26,7 +26,11 @@ const useLogin = () => {
     navigate('/interviews');
   };
 
-  return { method, onSubmit };
+  const handleNavigateSignUp = () => {
+    navigate('/sign-up');
+  };
+
+  return { method, onSubmit, handleNavigateSignUp };
 };
 
 export default useLogin;

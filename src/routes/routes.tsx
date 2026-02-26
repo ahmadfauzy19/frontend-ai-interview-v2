@@ -1,22 +1,29 @@
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import MainLayout from '../layout/main';
+import { useAuth } from '@/context/AuthContext';
 import ProtectedRoute from './ProtectedRoutes';
 
-const AuthPage = React.lazy(() => import('../pages/auth'));
-const InterviewPage = React.lazy(() => import('../pages/interviews'));
-const NotFoundPage = React.lazy(() => import('../pages/fallback/not-found'));
+const InterviewPage = React.lazy(() => import('@/pages/interviews'));
+const NotFoundPage = React.lazy(() => import('@/pages/fallback/not-found'));
+const MainLayout = React.lazy(() => import('@/layout/main'));
+const AuthLayout = React.lazy(() => import('@/pages/auth'));
+const LoginPage = React.lazy(() => import('@/pages/auth/login'));
+const SignUpPage = React.lazy(() => import('@/pages/auth/sign-up'));
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={isAuthenticated ? <Navigate to="/interviews" /> : <AuthPage />}
-      />
+      <Route element={<AuthLayout />}>
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <Navigate to="/interviews" /> : <LoginPage />
+          }
+        />
+        <Route path="/sign-up" element={<SignUpPage />} />
+      </Route>
       <Route path="*" element={<NotFoundPage />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
