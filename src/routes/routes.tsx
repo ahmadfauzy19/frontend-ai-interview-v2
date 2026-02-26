@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth/AuthContext';
 import ProtectedRoute from './ProtectedRoutes';
 
 const InterviewPage = React.lazy(() => import('@/pages/interviews'));

@@ -6,7 +6,7 @@ import useLogin from './Login.hooks';
 
 const LoginPage = () => {
   const theme = useTheme();
-  const { method, onSubmit, handleNavigateSignUp } = useLogin();
+  const { method, onSubmit, handleNavigateSignUp, isLoading } = useLogin();
 
   return (
     <AuthCard title="Login">
@@ -15,11 +15,13 @@ const LoginPage = () => {
           <Stack gap={1}>
             <TextfieldComponent
               control={method.control}
-              name="username"
-              label="Username or Email"
-              type="text"
-              placeholder="Enter your username/email"
+              name="email"
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
               required
+              validationRegex="/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/"
+              validationRegexMessage="Invalid email format"
             />
             <TextfieldComponent
               control={method.control}
@@ -46,6 +48,7 @@ const LoginPage = () => {
               size="small"
               sx={{ textTransform: 'uppercase' }}
               type="submit"
+              loading={isLoading}
             >
               Login
             </ButtonComponent>

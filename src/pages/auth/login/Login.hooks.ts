@@ -1,36 +1,47 @@
+import { useAuth } from '@/context/auth/AuthContext';
+import axios from 'axios';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
 import type { LoginForm } from '../Auth.interfaces';
 
 const useLogin = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const method = useForm<LoginForm>({
     defaultValues: {
-      username: '',
+      email: '',
       password: '',
     },
     mode: 'onTouched',
   });
 
-  const onSubmit = () => {
-    const watchedValues = method.watch();
-    console.log('values: ', watchedValues);
+  const onSubmit = async () => {
+    setIsLoading(true);
 
-    login({
-      username: watchedValues.username,
-    });
+    try {
+      const values = method.getValues();
+      const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-    navigate('/interviews');
+      const res = await axios.post(`${baseURL}/auth/login`, values);
+      const data = res.data;
+      login(data);
+
+      navigate('/interviews');
+      setIsLoading(false);
+    } catch (err) {
+      console.error('Error Login: ', err);
+      setIsLoading(false);
+    }
   };
 
   const handleNavigateSignUp = () => {
     navigate('/sign-up');
   };
 
-  return { method, onSubmit, handleNavigateSignUp };
+  return { method, onSubmit, handleNavigateSignUp, isLoading };
 };
 
 export default useLogin;

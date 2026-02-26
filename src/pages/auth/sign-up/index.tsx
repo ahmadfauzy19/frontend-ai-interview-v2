@@ -7,7 +7,8 @@ import { roleOptions } from './SignUp.const';
 import useSignUp from './SignUp.hooks';
 
 const SignUpPage = () => {
-  const { method, onSubmit } = useSignUp();
+  const { method, onSubmit, isLoading } = useSignUp();
+
   return (
     <AuthCard title="Sign Up">
       <form onSubmit={method.handleSubmit(onSubmit)}>
@@ -63,6 +64,7 @@ const SignUpPage = () => {
             size="small"
             sx={{ textTransform: 'uppercase' }}
             type="submit"
+            loading={isLoading}
           >
             Sign Up
           </ButtonComponent>

@@ -1,3 +1,6 @@
+import assets from '@/assets';
+import MenuComponent from '@/components/MenuComponent';
+import { useAuth } from '@/context/auth/AuthContext';
 import {
   Avatar,
   Box,
@@ -8,9 +11,6 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import assets from '../../assets';
-import MenuComponent from '../../components/MenuComponent';
-import { useAuth } from '../../context/AuthContext';
 import { SidebarMenu } from '../sidebar/Sidebar.const';
 import { navbarMenu } from './Navbar.const';
 
@@ -97,7 +97,7 @@ const Navbar = () => {
             }}
           >
             <Avatar src={assets.avatarDefault} />
-            <Typography>{limitUsername(userData.username)}</Typography>
+            <Typography>{limitUsername(userData.name)}</Typography>
           </button>
           <MenuComponent
             open={openProfile}
