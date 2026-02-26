@@ -45,8 +45,10 @@ const InterviewCard = ({ data }: { data: Interviews }) => {
         flexDirection="column"
         alignItems="center"
         gap={1}
+        flexGrow={1}
         width="100%"
         boxSizing="border-box"
+        justifyContent="space-between"
       >
         <Typography fontWeight={500} fontSize={14} textAlign="center">
           {data.roleTarget}
