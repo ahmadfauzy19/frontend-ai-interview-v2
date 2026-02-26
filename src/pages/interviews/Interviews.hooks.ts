@@ -1,25 +1,30 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import type { InterviewCreateForm } from './Interviews.interfaces';
+import axiosUtils from '@/utils/axiosUtils';
+import { useEffect, useState } from 'react';
+import type { Interviews } from './Interviews.interfaces';
 
 const useInterviews = () => {
-  const [openCreate, setOpenCreate] = useState(false);
-  const method = useForm<InterviewCreateForm>({
-    mode: 'onSubmit',
-  });
+  const [openModal, setOpenModal] = useState(false);
 
-  const handleOpenCreate = () => {
-    method.reset();
-    setOpenCreate(!openCreate);
+  const handleOpenModal = () => {
+    setOpenModal(!openModal);
   };
 
-  const onSubmit = () => {
-    const value = method.watch();
-    console.log({ value });
-    handleOpenCreate();
-  };
+  const [isLoading, setIsLoading] = useState(false);
+  const [interviewData, setInterviewData] = useState<Interviews[]>([]);
 
-  return { openCreate, handleOpenCreate, method, onSubmit };
+  async function fetchInterviews() {
+    const response = await axiosUtils.get('/interviews');
+    return response.data;
+  }
+  useEffect(() => {
+    setIsLoading(true);
+    fetchInterviews().then(data => {
+      setInterviewData(data);
+      setIsLoading(false);
+    });
+  }, []);
+
+  return { openModal, handleOpenModal, isLoading, interviewData };
 };
 
 export default useInterviews;

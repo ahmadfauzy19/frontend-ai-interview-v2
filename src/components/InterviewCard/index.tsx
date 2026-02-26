@@ -1,20 +1,11 @@
+import type { Interviews } from '@/pages/interviews/Interviews.interfaces';
 import { Icon } from '@iconify/react';
 import { Box, Typography, useTheme } from '@mui/material';
 import { ButtonComponent } from '../ButtonComponent';
 
-const InterviewCard = ({
-  interviewName,
-  responseTotal,
-}: {
-  interviewName: string;
-  responseTotal: number;
-}) => {
+const InterviewCard = ({ data }: { data: Interviews }) => {
   const theme = useTheme();
 
-  const displayTitle =
-    interviewName.split(' ').length > 3
-      ? interviewName.split(' ').slice(0, 3).join(' ') + '...'
-      : interviewName;
   return (
     <Box
       sx={{
@@ -39,8 +30,13 @@ const InterviewCard = ({
           justifyContent: 'center',
         }}
       >
-        <Typography color="white" fontWeight={600} textAlign="center">
-          {displayTitle}
+        <Typography
+          color="white"
+          fontWeight={600}
+          textAlign="center"
+          fontSize={14}
+        >
+          {data.name}
         </Typography>
       </Box>
       <Box
@@ -52,14 +48,9 @@ const InterviewCard = ({
         width="100%"
         boxSizing="border-box"
       >
-        <Box display="flex" gap={0.5}>
-          <Typography fontWeight={500} fontSize={14}>
-            Responses:{' '}
-          </Typography>
-          <Typography fontWeight={500} fontSize={14}>
-            {responseTotal}
-          </Typography>
-        </Box>
+        <Typography fontWeight={500} fontSize={14} textAlign="center">
+          {data.roleTarget}
+        </Typography>
         <Box display="flex" flexDirection="column" gap={1} width="100%">
           <ButtonComponent
             variant="contained"
