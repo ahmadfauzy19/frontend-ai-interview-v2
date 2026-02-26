@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/auth/AuthContext';
+import { useSnackbar } from '@/context/snackbar/SnackbarContext';
 import axios from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -8,6 +9,7 @@ import type { LoginForm } from '../Auth.interfaces';
 const useLogin = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
 
   const method = useForm<LoginForm>({
@@ -26,13 +28,23 @@ const useLogin = () => {
       const baseURL = import.meta.env.VITE_API_BASE_URL;
 
       const res = await axios.post(`${baseURL}/auth/login`, values);
+
       const data = res.data;
       login(data);
 
       navigate('/interviews');
+      showSnackbar('Login Success', 'success');
+
       setIsLoading(false);
     } catch (err) {
       console.error('Error Login: ', err);
+
+      if (axios.isAxiosError(err) && err.response?.status === 403) {
+        showSnackbar('Login Failed. Email or password is incorrect', 'error');
+      } else {
+        showSnackbar('Login Failed. Please try again.', 'error');
+      }
+
       setIsLoading(false);
     }
   };

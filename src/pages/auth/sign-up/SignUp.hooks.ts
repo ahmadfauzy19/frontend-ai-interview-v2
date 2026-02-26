@@ -1,3 +1,4 @@
+import { useSnackbar } from '@/context/snackbar/SnackbarContext';
 import axios from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -17,6 +18,7 @@ const useSignUp = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -28,9 +30,12 @@ const useSignUp = () => {
       await axios.post(`${baseURL}/auth/register`, values);
       setIsLoading(false);
       navigate('/');
+
+      showSnackbar('Account Created. Please login to continue', 'success');
     } catch (err) {
       console.error('Error Sign Up: ', err);
       setIsLoading(false);
+      showSnackbar('Failed to create account. Please try again.', 'error');
     }
   };
 
