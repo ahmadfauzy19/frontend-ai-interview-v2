@@ -1,4 +1,4 @@
-import type { FormOption } from '../../components/Form/Form.interfaces';
+import type { FormOption } from '@/components/Form/Form.interfaces';
 
 export const purposeOptions: FormOption[] = [
   {

@@ -1,3 +1,4 @@
+import { SnackbarProvider } from '@/context/snackbar/SnackbarContext';
 import { ThemeProvider } from '@mui/material';
 import AppRoutes from './routes/routes';
 import { mainTheme } from './styles/theme/theme';
@@ -5,7 +6,9 @@ import { mainTheme } from './styles/theme/theme';
 function App() {
   return (
     <ThemeProvider theme={mainTheme}>
-      <AppRoutes />
+      <SnackbarProvider>
+        <AppRoutes />
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }

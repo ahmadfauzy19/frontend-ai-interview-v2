@@ -1,3 +1,8 @@
+import assets from '@/assets';
+import MenuComponent from '@/components/MenuComponent';
+import { useAuth } from '@/context/auth/AuthContext';
+import { useSnackbar } from '@/context/snackbar/SnackbarContext';
+import axiosUtils from '@/utils/axiosUtils';
 import {
   Avatar,
   Box,
@@ -8,9 +13,6 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import assets from '../../assets';
-import MenuComponent from '../../components/MenuComponent';
-import { useAuth } from '../../context/AuthContext';
 import { SidebarMenu } from '../sidebar/Sidebar.const';
 import { navbarMenu } from './Navbar.const';
 
@@ -19,6 +21,7 @@ const Navbar = () => {
   const { pathname } = useLocation();
   const { logout, isAuthenticated, userData } = useAuth();
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   const activeMenu = SidebarMenu.find(item => item.path === pathname);
   const pageTitle = activeMenu ? activeMenu.title : 'Login';
@@ -32,9 +35,17 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/', { replace: true });
+  const handleLogout = async () => {
+    try {
+      await axiosUtils.post('/auth/logout');
+      logout();
+      navigate('/', { replace: true });
+
+      showSnackbar('Logout Success', 'success');
+    } catch (error) {
+      console.log('Error Logout: ', error);
+      showSnackbar('Logout Failed. Please try again.', 'error');
+    }
   };
 
   function limitUsername(username: string) {
@@ -97,7 +108,7 @@ const Navbar = () => {
             }}
           >
             <Avatar src={assets.avatarDefault} />
-            <Typography>{limitUsername(userData.username)}</Typography>
+            <Typography>{limitUsername(userData.name)}</Typography>
           </button>
           <MenuComponent
             open={openProfile}

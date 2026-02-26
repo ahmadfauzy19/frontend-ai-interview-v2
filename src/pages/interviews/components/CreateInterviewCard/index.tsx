@@ -6,7 +6,7 @@ const CreateInterviewCard = ({ handleClick }: { handleClick?: () => void }) => {
     <Box
       component="div"
       sx={{
-        height: 210,
+        height: 230,
         width: 170,
         display: 'flex',
         flexDirection: 'column',
