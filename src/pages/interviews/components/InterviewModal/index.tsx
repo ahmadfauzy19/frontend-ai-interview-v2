@@ -10,11 +10,16 @@ import useInterviewModal from './InterviewModal.hooks';
 const InterviewModal = ({
   open,
   handleClose,
+  refetch,
 }: {
   open: boolean;
   handleClose: () => void;
+  refetch: () => void;
 }) => {
-  const { method, onSubmit } = useInterviewModal(handleClose);
+  const { method, onSubmit, isLoading } = useInterviewModal(
+    handleClose,
+    refetch
+  );
 
   useEffect(() => {
     method.reset();
@@ -122,6 +127,7 @@ const InterviewModal = ({
                     variant="contained"
                     sx={{ borderRadius: 2, paddingX: 4 }}
                     type="submit"
+                    loading={isLoading}
                   >
                     Save
                   </ButtonComponent>

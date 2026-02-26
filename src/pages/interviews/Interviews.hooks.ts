@@ -12,19 +12,29 @@ const useInterviews = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [interviewData, setInterviewData] = useState<Interviews[]>([]);
 
-  async function fetchInterviews() {
-    const response = await axiosUtils.get('/interviews');
-    return response.data;
-  }
-  useEffect(() => {
+  const getInterviews = async () => {
     setIsLoading(true);
-    fetchInterviews().then(data => {
-      setInterviewData(data);
+    try {
+      const response = await axiosUtils.get('/interviews');
+      setInterviewData(response.data);
+    } catch (error) {
+      console.error('Failed to fetch interviews:', error);
+    } finally {
       setIsLoading(false);
-    });
+    }
+  };
+
+  useEffect(() => {
+    getInterviews();
   }, []);
 
-  return { openModal, handleOpenModal, isLoading, interviewData };
+  return {
+    openModal,
+    handleOpenModal,
+    isLoading,
+    interviewData,
+    getInterviews,
+  };
 };
 
 export default useInterviews;

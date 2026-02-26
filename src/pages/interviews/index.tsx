@@ -6,10 +6,14 @@ import InterviewModal from './components/InterviewModal';
 import useInterviews from './Interviews.hooks';
 
 const InterviewsPage = () => {
-  const { openModal, handleOpenModal, interviewData, isLoading } =
-    useInterviews();
+  const {
+    openModal,
+    handleOpenModal,
+    interviewData,
+    isLoading,
+    getInterviews,
+  } = useInterviews();
 
-  console.log({ interviewData });
   return (
     <Box flexGrow={1}>
       <Stack gap={3}>
@@ -30,7 +34,11 @@ const InterviewsPage = () => {
         </Box>
       </Stack>
 
-      <InterviewModal open={openModal} handleClose={handleOpenModal} />
+      <InterviewModal
+        open={openModal}
+        handleClose={handleOpenModal}
+        refetch={getInterviews}
+      />
     </Box>
   );
 };
