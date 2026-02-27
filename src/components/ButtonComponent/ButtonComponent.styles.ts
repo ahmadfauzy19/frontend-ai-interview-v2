@@ -1,7 +1,7 @@
 function getStyles() {
   return {
     button: {
-      borderRadius: '32px',
+      borderRadius: '6px',
       gap: '4px',
       paddingY: '6px',
     },

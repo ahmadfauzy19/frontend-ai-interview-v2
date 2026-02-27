@@ -6,6 +6,10 @@ import { ButtonComponent } from '../../../../components/ButtonComponent';
 const InterviewCard = ({ data }: { data: Interviews }) => {
   const theme = useTheme();
 
+  const handleStartInterview = () => {
+    window.open(`/interviews/call/${data.id}`, '_blank');
+  };
+
   return (
     <Box
       sx={{
@@ -60,6 +64,7 @@ const InterviewCard = ({ data }: { data: Interviews }) => {
             sx={{ borderRadius: 1, fontSize: 12 }}
             fullWidth
             startIcon={<Icon icon="mdi:camera-outline" />}
+            onClick={handleStartInterview}
           >
             Start Interview
           </ButtonComponent>

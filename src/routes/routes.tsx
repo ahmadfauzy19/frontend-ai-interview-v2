@@ -9,6 +9,7 @@ const MainLayout = React.lazy(() => import('@/layout/main'));
 const AuthLayout = React.lazy(() => import('@/pages/auth'));
 const LoginPage = React.lazy(() => import('@/pages/auth/login'));
 const SignUpPage = React.lazy(() => import('@/pages/auth/sign-up'));
+const CallInterviewPage = React.lazy(() => import('@/pages/interviews/call'));
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -30,6 +31,7 @@ const AppRoutes = () => {
           <Route path="/interviews" element={<InterviewPage />} />
         </Route>
       </Route>
+      <Route path="/interviews/call/:id" element={<CallInterviewPage />} />
     </Routes>
   );
 };
