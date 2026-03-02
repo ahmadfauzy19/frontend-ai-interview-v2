@@ -1,16 +1,28 @@
+import { ButtonComponent } from '@/components/ButtonComponent';
+import { useAuth } from '@/context/auth/AuthContext';
+import { useSnackbar } from '@/context/snackbar/SnackbarContext';
+import axiosUtils from '@/utils/axiosUtils';
 import { Box, Stack, Typography, useTheme } from '@mui/material';
-import type { Question } from '../../CallInterview.interfaces';
 import { useEffect, useState } from 'react';
 import { useRecordWebcam } from 'react-record-webcam';
+import type { InterviewState, Question } from '../../CallInterview.interfaces';
 
-const RecordInterviews = ({ questions }: { questions: Question[] }) => {
+const RecordInterviews = ({
+  questions,
+  setInterviewState,
+}: {
+  questions: Question[];
+  setInterviewState: (state: InterviewState) => void;
+}) => {
   const theme = useTheme();
   const [activeQuestion, setActiveQuestion] = useState(1);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(
     questions[0]
   );
   const [recordId, setRecordId] = useState('');
-  console.log({ recordId });
+  const { userData } = useAuth();
+  const { showSnackbar } = useSnackbar();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setCurrentQuestion(questions[activeQuestion - 1]);
@@ -27,14 +39,11 @@ const RecordInterviews = ({ questions }: { questions: Question[] }) => {
     openCamera,
     startRecording,
     stopRecording,
-    // download,
     clearAllRecordings,
   } = useRecordWebcam();
 
   const recordVideo = async () => {
     const recording = await createRecording();
-
-    console.log({ recording });
 
     if (!recording) return;
     setRecordId(recording.id);
@@ -43,25 +52,52 @@ const RecordInterviews = ({ questions }: { questions: Question[] }) => {
     await startRecording(recording.id);
   };
 
-  const nextRecord = async () => {
-    const recorded = await stopRecording(recordId);
-    // await download(recordId);
-    // TODO :: UPLOAD RECORDED HERE
-    console.log({ recorded });
+  const nextRecord = async (index: number, type: 'next' | 'finish') => {
+    const recorded: any = await stopRecording(recordId);
 
-    await clearAllRecordings();
+    setIsLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append(
+        'video',
+        recorded.blob,
+        `${currentQuestion.questionText}-${userData.userId}-${Date.now()}.mp4`
+      );
 
-    const newRecording = await createRecording();
-    if (newRecording) {
-      setRecordId(newRecording.id);
-      await openCamera(newRecording.id);
-      await startRecording(newRecording.id);
+      await axiosUtils.post(
+        `/answers/upload?questionId=${currentQuestion.id}&userId=${userData.userId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (type === 'finish') {
+        setInterviewState('END');
+        await clearAllRecordings();
+      } else {
+        setActiveQuestion(index);
+
+        await clearAllRecordings();
+
+        const newRecording = await createRecording();
+        if (newRecording) {
+          setRecordId(newRecording.id);
+          await openCamera(newRecording.id);
+          await startRecording(newRecording.id);
+        }
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      showSnackbar('Failed to upload video', 'error');
+      setIsLoading(false);
     }
-  };
 
-  const handleChangeQuestion = (index: number) => {
-    setActiveQuestion(index);
-    nextRecord();
+    await startRecording(recordId);
   };
 
   return (
@@ -106,7 +142,7 @@ const RecordInterviews = ({ questions }: { questions: Question[] }) => {
                 }}
                 onClick={() => {
                   if (!currentQuestion)
-                    return handleChangeQuestion(questionOrder);
+                    return nextRecord(questionOrder, 'next');
                 }}
               >
                 <Typography
@@ -139,7 +175,7 @@ const RecordInterviews = ({ questions }: { questions: Question[] }) => {
         <Typography textAlign="center">
           {currentQuestion?.questionText}
         </Typography>
-        <Box>
+        <Box borderRadius={4} overflow="hidden">
           {activeRecordings.map(recording => (
             <Box width="100%" key={recording.id}>
               <video
@@ -150,6 +186,17 @@ const RecordInterviews = ({ questions }: { questions: Question[] }) => {
               />
             </Box>
           ))}
+        </Box>
+        <Box display="flex" justifyContent="center">
+          <ButtonComponent
+            variant="contained"
+            onClick={async () => {
+              nextRecord(1, 'finish');
+            }}
+            loading={isLoading}
+          >
+            Finish Session
+          </ButtonComponent>
         </Box>
       </Box>
     </Box>

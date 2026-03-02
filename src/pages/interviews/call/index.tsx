@@ -61,7 +61,10 @@ const CallInterviewPage = () => {
           />
         )}
         {interviewState === 'QUESTION' && (
-          <RecordInterviews questions={interview?.questions || []} />
+          <RecordInterviews
+            questions={interview?.questions || []}
+            setInterviewState={setInterviewState}
+          />
         )}
         {interviewState === 'END' && <EndInterviews />}
       </Box>
