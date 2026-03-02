@@ -48,10 +48,10 @@ const Navbar = () => {
     }
   };
 
-  function limitUsername(username: string) {
-    const words = username.split(' ');
+  function limitUsername(username?: string) {
+    const words = username?.split(' ');
     const truncatedText =
-      words.length > 3 ? words.slice(0, 3).join(' ') : username;
+      words && words.length > 3 ? words.slice(0, 3).join(' ') : username;
 
     return truncatedText;
   }
