@@ -62,7 +62,7 @@ const SignUpPage = () => {
           <ButtonComponent
             variant="contained"
             size="small"
-            sx={{ textTransform: 'uppercase' }}
+            sx={{ textTransform: 'uppercase', borderRadius: '32px' }}
             type="submit"
             loading={isLoading}
           >

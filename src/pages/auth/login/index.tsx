@@ -46,7 +46,7 @@ const LoginPage = () => {
             <ButtonComponent
               variant="contained"
               size="small"
-              sx={{ textTransform: 'uppercase' }}
+              sx={{ textTransform: 'uppercase', borderRadius: '32px' }}
               type="submit"
               loading={isLoading}
             >
@@ -84,6 +84,7 @@ const LoginPage = () => {
               textTransform: 'uppercase',
               backgroundColor: theme.palette.secondary.main,
               color: 'white',
+              borderRadius: '32px',
             }}
             onClick={handleNavigateSignUp}
           >
