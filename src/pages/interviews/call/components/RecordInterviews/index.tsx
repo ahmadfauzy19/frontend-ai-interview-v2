@@ -58,20 +58,19 @@ const RecordInterviews = ({
     setIsLoading(true);
     try {
       const formData = new FormData();
-      formData.append(
-        'video',
-        recorded.blob,
-        `${currentQuestion.questionText}-${userData.userId}-${Date.now()}.mp4`
-      );
+      if (recorded?.blob) {
+        const videoFile = new File(
+          [recorded.blob],
+          `${currentQuestion.questionText.replace(/\s+/g, '_')}-${userData.userId}-${Date.now()}.mp4`,
+          { type: 'video/webm' }
+        );
+
+        formData.append('video', videoFile);
+      }
 
       await axiosUtils.post(
         `/answers/upload?questionId=${currentQuestion.id}&userId=${userData.userId}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
+        formData
       );
 
       if (type === 'finish') {
