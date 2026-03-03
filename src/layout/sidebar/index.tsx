@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 import { Link, Stack, Typography, useTheme } from '@mui/material';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { matchPath, Link as RouterLink, useLocation } from 'react-router-dom';
 import { SidebarMenu } from './Sidebar.const';
 
 const Sidebar = () => {
@@ -15,8 +15,8 @@ const Sidebar = () => {
         height: 'calc(100vh - 75px)',
       }}
     >
-      {SidebarMenu.map((item, index) => {
-        const isActive = pathname === item.path;
+      {SidebarMenu.filter(item => !item.hidden).map((item, index) => {
+        const isActive = !!matchPath({ path: item.path, end: false }, pathname);
 
         return (
           <Link

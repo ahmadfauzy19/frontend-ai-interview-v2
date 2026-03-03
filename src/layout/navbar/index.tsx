@@ -12,7 +12,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { SidebarMenu } from '../sidebar/Sidebar.const';
 import { navbarMenu } from './Navbar.const';
 
@@ -23,8 +23,11 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
 
-  const activeMenu = SidebarMenu.find(item => item.path === pathname);
-  const pageTitle = activeMenu ? activeMenu.title : 'Login';
+  const currentMenu = SidebarMenu.find(item =>
+    matchPath({ path: item.path, end: true }, pathname)
+  );
+
+  const pageTitle = currentMenu ? currentMenu.title : 'Login';
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openProfile = Boolean(anchorEl);
