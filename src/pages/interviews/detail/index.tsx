@@ -13,7 +13,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { PieChart } from '@mui/x-charts/PieChart';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   dummyOverall,
   dummyUserReponse,
@@ -28,6 +28,7 @@ const InterviewDetailPage = () => {
   const { method, handleSortChange } = useDetailInterview();
   const location = useLocation();
   const currentPath = location.pathname;
+  const navigate = useNavigate();
 
   const tableHeader: TableHeader[] = [
     {
@@ -74,6 +75,10 @@ const InterviewDetailPage = () => {
     },
   ];
 
+  const handleEdit = () => {
+    navigate(`${currentPath}/edit`);
+  };
+
   const style = {
     cardSummary: {
       padding: 2,
@@ -114,6 +119,7 @@ const InterviewDetailPage = () => {
             gap: 1,
             alignItems: 'center',
           }}
+          onClick={handleEdit}
         >
           <Icon
             icon="material-symbols:edit-outline"
@@ -126,7 +132,7 @@ const InterviewDetailPage = () => {
           </Typography>
         </Box>
         <Divider orientation="vertical" flexItem />
-        <Box display="flex" gap={1}>
+        <Box display="flex" gap={1} alignItems="center">
           <Typography fontSize={14}>Active</Typography>
           <SwitchComponent
             checked={method.watch('isActive')}

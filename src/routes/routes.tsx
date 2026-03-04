@@ -13,6 +13,9 @@ const CallInterviewPage = React.lazy(() => import('@/pages/interviews/call'));
 const DetailInterviewPage = React.lazy(
   () => import('@/pages/interviews/detail')
 );
+const EditInterviewPage = React.lazy(
+  () => import('@/pages/interviews/detail/edit')
+);
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -33,7 +36,8 @@ const AppRoutes = () => {
         <Route element={<MainLayout />}>
           <Route path="/interviews" element={<InterviewPage />} />
           <Route path="/interviews/:id" element={<DetailInterviewPage />} />
-          <Route path="/interviews/:id/answer/:id" element={<Outlet />} />
+          <Route path="/interviews/:id/edit" element={<EditInterviewPage />} />
+          <Route path="/interviews/:id/answer/:userId" element={<Outlet />} />
         </Route>
       </Route>
       <Route path="/interviews/call/:id" element={<CallInterviewPage />} />
