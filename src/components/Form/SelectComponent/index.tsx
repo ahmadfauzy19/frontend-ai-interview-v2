@@ -35,6 +35,7 @@ export const SelectComponent = <T extends FieldValues>({
   helperText,
   returnType = 'value',
   fullWidth = false,
+  startIcon,
 }: SelectComponentProps<T> & ExtraProps) => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
@@ -109,6 +110,22 @@ export const SelectComponent = <T extends FieldValues>({
     </Box>
   );
 
+  const renderStartIcon = () => (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 32,
+        height: 32,
+        marginRight: 0.5,
+        cursor: 'pointer',
+      }}
+    >
+      {startIcon}
+    </Box>
+  );
+
   const findOption = (val: string) =>
     options.find(o =>
       typeof o === 'string' ? o === val : String(o.value) === val
@@ -168,6 +185,7 @@ export const SelectComponent = <T extends FieldValues>({
           readOnly={loading}
           fullWidth={fullWidth}
           error={!!errorMessage}
+          startAdornment={renderStartIcon()}
           sx={{
             '& .MuiSelect-select': {
               paddingRight: '0px !important',

@@ -1,13 +1,19 @@
 import type { Interviews } from '@/pages/interviews/Interviews.interfaces';
 import { Icon } from '@iconify/react';
 import { Box, Typography, useTheme } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { ButtonComponent } from '../../../../components/ButtonComponent';
 
 const InterviewCard = ({ data }: { data: Interviews }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const handleStartInterview = () => {
     window.open(`/interviews/call/${data.id}`, '_blank');
+  };
+
+  const handleInterviewResult = () => {
+    navigate(`/interviews/${data.id}`);
   };
 
   return (
@@ -83,6 +89,7 @@ const InterviewCard = ({ data }: { data: Interviews }) => {
             }}
             fullWidth
             startIcon={<Icon icon="solar:document-linear" />}
+            onClick={handleInterviewResult}
           >
             See interview result
           </ButtonComponent>

@@ -25,4 +25,5 @@ export interface SelectComponentProps<
   };
   helperText?: string;
   fullWidth?: boolean;
+  startIcon?: ReactNode;
 }

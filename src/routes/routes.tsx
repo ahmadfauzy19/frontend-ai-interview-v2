@@ -1,6 +1,6 @@
+import { useAuth } from '@/context/auth/AuthContext';
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useAuth } from '@/context/auth/AuthContext';
 import ProtectedRoute from './ProtectedRoutes';
 
 const InterviewPage = React.lazy(() => import('@/pages/interviews'));
@@ -10,6 +10,15 @@ const AuthLayout = React.lazy(() => import('@/pages/auth'));
 const LoginPage = React.lazy(() => import('@/pages/auth/login'));
 const SignUpPage = React.lazy(() => import('@/pages/auth/sign-up'));
 const CallInterviewPage = React.lazy(() => import('@/pages/interviews/call'));
+const DetailInterviewPage = React.lazy(
+  () => import('@/pages/interviews/detail')
+);
+const EditInterviewPage = React.lazy(
+  () => import('@/pages/interviews/detail/edit')
+);
+const InterviewAnswerPage = React.lazy(
+  () => import('@/pages/interviews/detail/answer')
+);
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -29,6 +38,12 @@ const AppRoutes = () => {
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
           <Route path="/interviews" element={<InterviewPage />} />
+          <Route path="/interviews/:id" element={<DetailInterviewPage />} />
+          <Route path="/interviews/:id/edit" element={<EditInterviewPage />} />
+          <Route
+            path="/interviews/:id/answer/:userId"
+            element={<InterviewAnswerPage />}
+          />
         </Route>
       </Route>
       <Route path="/interviews/call/:id" element={<CallInterviewPage />} />
