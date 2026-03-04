@@ -10,7 +10,7 @@ const Sidebar = () => {
   return (
     <Stack
       sx={{
-        width: 245,
+        minWidth: 245,
         borderRight: `1px solid ${theme.palette.divider}`,
         height: 'calc(100vh - 75px)',
       }}

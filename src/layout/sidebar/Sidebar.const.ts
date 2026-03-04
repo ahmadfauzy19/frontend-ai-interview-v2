@@ -19,4 +19,10 @@ export const SidebarMenu: SidebarMenuInterface[] = [
     icon: '',
     hidden: true,
   },
+  {
+    title: 'Detail Interview',
+    path: '/interviews/:id/answer/:userId',
+    icon: '',
+    hidden: true,
+  },
 ];

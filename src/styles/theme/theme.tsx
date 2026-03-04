@@ -2,7 +2,11 @@ import { createTheme } from '@mui/material';
 import { ButtonComponentTheme } from '../../components/ButtonComponent/ButtonComponent.theme';
 import { commonThemeOptions } from './baseTheme';
 
-const baseTheme = createTheme();
+const baseTheme = createTheme({
+  palette: {
+    mode: 'light',
+  },
+});
 
 export const mainTheme = createTheme(baseTheme, ButtonComponentTheme, {
   ...commonThemeOptions,

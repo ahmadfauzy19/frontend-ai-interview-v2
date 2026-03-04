@@ -1,6 +1,6 @@
 import { useAuth } from '@/context/auth/AuthContext';
 import React from 'react';
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoutes';
 
 const InterviewPage = React.lazy(() => import('@/pages/interviews'));
@@ -15,6 +15,9 @@ const DetailInterviewPage = React.lazy(
 );
 const EditInterviewPage = React.lazy(
   () => import('@/pages/interviews/detail/edit')
+);
+const InterviewAnswerPage = React.lazy(
+  () => import('@/pages/interviews/detail/answer')
 );
 
 const AppRoutes = () => {
@@ -37,7 +40,10 @@ const AppRoutes = () => {
           <Route path="/interviews" element={<InterviewPage />} />
           <Route path="/interviews/:id" element={<DetailInterviewPage />} />
           <Route path="/interviews/:id/edit" element={<EditInterviewPage />} />
-          <Route path="/interviews/:id/answer/:userId" element={<Outlet />} />
+          <Route
+            path="/interviews/:id/answer/:userId"
+            element={<InterviewAnswerPage />}
+          />
         </Route>
       </Route>
       <Route path="/interviews/call/:id" element={<CallInterviewPage />} />
