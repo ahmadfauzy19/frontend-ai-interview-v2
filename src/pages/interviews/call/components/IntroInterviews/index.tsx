@@ -31,7 +31,7 @@ const IntroInterviews = ({
       </Typography>
       <Box
         sx={{
-          backgroundColor: '#e3f2fd',
+          backgroundColor: theme.palette.primary.light,
           border: `1px solid ${theme.palette.primary.main}`,
           borderRadius: 2,
           padding: 2,

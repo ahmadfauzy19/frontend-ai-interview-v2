@@ -9,6 +9,7 @@ export const mainTheme = createTheme(baseTheme, ButtonComponentTheme, {
   palette: {
     primary: {
       main: '#0076D2',
+      light: '#e3f2fd',
     },
     secondary: {
       main: '#ffcc00',
