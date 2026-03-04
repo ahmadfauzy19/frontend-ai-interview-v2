@@ -1,0 +1,397 @@
+import SelectComponent from '@/components/Form/SelectComponent';
+import SwitchComponent from '@/components/Form/SwitchComponent';
+import TableComponent from '@/components/Table/TableComponent';
+import type { TableHeader } from '@/components/Table/TableComponent/TableComponent.interfaces';
+import { Icon } from '@iconify/react';
+import {
+  Box,
+  Divider,
+  Grid,
+  Link,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material';
+import { PieChart } from '@mui/x-charts/PieChart';
+import { useLocation } from 'react-router-dom';
+import {
+  dummyOverall,
+  dummyUserReponse,
+  filterOptions,
+} from './DetailInterview.const';
+import useDetailInterview from './DetailInterview.hooks';
+import type { OverallScore } from './DetailInterview.interfaces';
+import UserResponseCard from './components/UserResponseCard';
+
+const InterviewDetailPage = () => {
+  const theme = useTheme();
+  const { method, handleSortChange } = useDetailInterview();
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const tableHeader: TableHeader[] = [
+    {
+      key: 'name',
+      label: 'Name',
+      sort: true,
+      sx: { width: '15%' },
+      labelAlign: 'center',
+      render: row => {
+        const r = row as unknown as OverallScore;
+        return (
+          <Box display="flex" gap={1}>
+            <Link href={`${currentPath}/answer/${r.id}`}>
+              <Icon icon="lucide:external-link" width={20} height={20} />
+            </Link>
+            <Typography fontSize={14}>{r.name}</Typography>
+          </Box>
+        );
+      },
+    },
+    {
+      key: 'overallScore',
+      label: 'Overall Score',
+      sort: true,
+      sx: { width: '16%', textAlign: 'center' },
+      labelAlign: 'center',
+    },
+    {
+      key: 'communicationScore',
+      label: 'Communication Score',
+      sort: true,
+      sx: { width: '22%', textAlign: 'center' },
+      labelAlign: 'center',
+    },
+    {
+      key: 'summary',
+      label: 'Summary',
+      sx: { width: 'auto' },
+      labelAlign: 'center',
+      render: row => {
+        const r = row as unknown as OverallScore;
+        return <Typography fontSize={12}>{r.summary}</Typography>;
+      },
+    },
+  ];
+
+  const style = {
+    cardSummary: {
+      padding: 2,
+      borderRadius: 3,
+      backgroundColor: theme.palette.background.paper,
+      boxShadow: 2,
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    cardResult: {
+      backgroundColor: theme.palette.primary.light,
+      paddingY: 1,
+      paddingX: 2,
+      borderRadius: 3,
+      width: 'fit-content',
+    },
+  };
+
+  return (
+    <Box
+      sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}
+    >
+      <Box display="flex" justifyContent="center" gap={2}>
+        <Typography fontSize={18} fontWeight={700}>
+          Title Interview
+        </Typography>
+        <Divider orientation="vertical" flexItem />
+        <Box display="flex" gap={1}>
+          <Icon icon="material-symbols:person-outline" width={24} height={24} />
+          <Typography>: 1</Typography>
+        </Box>
+        <Divider orientation="vertical" flexItem />
+        <Box
+          component="div"
+          sx={{
+            cursor: 'pointer',
+            display: 'flex',
+            gap: 1,
+            alignItems: 'center',
+          }}
+        >
+          <Icon
+            icon="material-symbols:edit-outline"
+            width={24}
+            height={24}
+            color={theme.palette.primary.main}
+          />
+          <Typography fontSize={14} color={theme.palette.primary.main}>
+            Edit
+          </Typography>
+        </Box>
+        <Divider orientation="vertical" flexItem />
+        <Box display="flex" gap={1}>
+          <Typography fontSize={14}>Active</Typography>
+          <SwitchComponent
+            checked={method.watch('isActive')}
+            size="small"
+            onChange={() => {
+              method.setValue('isActive', !method.watch('isActive'));
+            }}
+          />
+        </Box>
+      </Box>
+      <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+        <Grid
+          size={{ xs: 3, lg: 2 }}
+          sx={{ display: 'flex', flexDirection: 'column' }}
+        >
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap={2}
+            padding={2}
+            border={`1px solid ${theme.palette.divider}`}
+            borderRadius={2}
+            flexGrow={1}
+          >
+            <Box>
+              <SelectComponent
+                control={method.control}
+                name="filter"
+                placeholder="Filter by"
+                fullWidth
+                options={filterOptions}
+                startIcon={
+                  <Icon
+                    icon="lucide:filter"
+                    color={theme.palette.text.secondary}
+                  />
+                }
+              />
+            </Box>
+            {dummyUserReponse.map(item => (
+              <UserResponseCard key={item.id} data={item} />
+            ))}
+          </Box>
+        </Grid>
+        <Grid
+          size={{ xs: 9, lg: 10 }}
+          sx={{ display: 'flex', flexDirection: 'column' }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              padding: 2,
+              borderRadius: 3,
+              backgroundColor: theme.palette.primary.light,
+            }}
+          >
+            <Typography fontSize={18} fontWeight={600}>
+              Overall Analysis
+            </Typography>
+            <Box display="flex" gap={0.5}>
+              <Typography fontSize={14}>Interview Description:</Typography>
+              <Typography fontSize={14} fontWeight={600}>
+                Test
+              </Typography>
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              padding={2}
+              borderRadius={3}
+              bgcolor={theme.palette.background.paper}
+              minHeight={'30vh'}
+            >
+              <TableComponent
+                tableHeader={tableHeader}
+                tableData={dummyOverall as unknown as Record<string, string>[]}
+                minWidth="900px"
+                renderPagination={false}
+                maxHeight="30vh"
+                page={method.watch('page')}
+                pageSize={method.watch('size')}
+                onPageChange={page => method.setValue('page', page)}
+                onPageSizeChange={pageSize => method.setValue('size', pageSize)}
+                onSort={handleSortChange}
+                totalData={dummyOverall.length}
+              />
+            </Box>
+            <Box display="flex" gap={3} justifyContent="center">
+              <Box display="flex" flexDirection="column" gap={2}>
+                <Box
+                  sx={{
+                    ...style.cardSummary,
+                    gap: 1,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Box display="flex" gap={0.5}>
+                    <Typography fontWeight={600}>Average Duration</Typography>
+                    <Tooltip
+                      title="Average time users took to complete an interview"
+                      placement="top"
+                    >
+                      <Icon
+                        icon="material-symbols:info-outline"
+                        width={12}
+                        height={12}
+                        color={theme.palette.primary.main}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    </Tooltip>
+                  </Box>
+                  <Box sx={style.cardResult}>
+                    <Typography
+                      fontWeight={600}
+                      fontSize={24}
+                      color={'primary'}
+                    >
+                      1m 35s
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box
+                  sx={{
+                    ...style.cardSummary,
+                    gap: 1,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Box display="flex" gap={0.5}>
+                    <Typography fontWeight={600}>
+                      Interview Completion Rate
+                    </Typography>
+                    <Tooltip
+                      title="Percentage of interviews completed successfully"
+                      placement="top"
+                    >
+                      <Icon
+                        icon="material-symbols:info-outline"
+                        width={12}
+                        height={12}
+                        color={theme.palette.primary.main}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    </Tooltip>
+                  </Box>
+                  <Box sx={style.cardResult}>
+                    <Typography
+                      fontWeight={600}
+                      fontSize={24}
+                      color={'primary'}
+                    >
+                      100%
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+              <Box
+                sx={{
+                  ...style.cardSummary,
+                }}
+              >
+                <Box display="flex" gap={1} justifyContent="center">
+                  <Icon icon="lucide:smile" width={25} height={25} />
+                  <Typography fontWeight={600}>Candidate Sentiment</Typography>
+                  <Tooltip
+                    title="Distribution of user sentiments during interviews"
+                    placement="top"
+                  >
+                    <Icon
+                      icon="material-symbols:info-outline"
+                      width={12}
+                      height={12}
+                      color={theme.palette.primary.main}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </Tooltip>
+                </Box>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        {
+                          id: 1,
+                          value: 0,
+                          label: `Positive (${0})`,
+                          color: theme.palette.success.light,
+                        },
+                        { id: 2, value: 1, label: `Neutral (${1})` },
+                        {
+                          id: 3,
+                          value: 0,
+                          label: `Negative (${0})`,
+                          color: theme.palette.error.main,
+                        },
+                      ],
+                    },
+                  ]}
+                  width={150}
+                  height={150}
+                />
+              </Box>
+
+              <Box
+                sx={{
+                  ...style.cardSummary,
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                <Box display="flex" gap={1} justifyContent="center">
+                  <Icon icon="lucide:circle-user" width={25} height={25} />
+                  <Typography fontWeight={600}>Candidate Status</Typography>
+                  <Tooltip
+                    title="Breakdown of the candidate selection status"
+                    placement="top"
+                  >
+                    <Icon
+                      icon="material-symbols:info-outline"
+                      width={12}
+                      height={12}
+                      color={theme.palette.primary.main}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </Tooltip>
+                </Box>
+                <Typography fontSize={14}>Total Response: 1</Typography>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        {
+                          id: 1,
+                          value: 1,
+                          label: `Selected (${1})`,
+                          color: theme.palette.success.light,
+                        },
+                        { id: 2, value: 0, label: `Potential (${0})` },
+                        {
+                          id: 3,
+                          value: 0,
+                          label: `Not Selected (${0})`,
+                          color: theme.palette.error.main,
+                        },
+                        {
+                          id: 4,
+                          value: 0,
+                          label: `No Status (${0})`,
+                          color: theme.palette.grey[400],
+                        },
+                      ],
+                    },
+                  ]}
+                  width={150}
+                  height={150}
+                />
+              </Box>
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export default InterviewDetailPage;
