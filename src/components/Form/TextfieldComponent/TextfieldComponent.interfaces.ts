@@ -31,7 +31,6 @@ export interface TextfieldComponentProps<T extends FieldValues> extends Omit<
   maxLength?: number;
   isMaxLengthHelper?: boolean;
   sx?: TextFieldProps['sx'];
-  debounceTime?: number;
   type?: React.InputHTMLAttributes<HTMLInputElement>['type'];
   validationRegex?: string | RegExp;
   validationRegexMessage?: string;

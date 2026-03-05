@@ -9,9 +9,8 @@ import {
   useTheme,
 } from '@mui/material';
 import DOMPurify from 'dompurify';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Controller, type FieldValues } from 'react-hook-form';
-import { useDebounce } from 'use-debounce';
 import type {
   ControlledTextFieldProps,
   TextfieldComponentProps,
@@ -161,7 +160,6 @@ const ControlledTextField = <T extends FieldValues>({
   maxLength,
   isMaxLengthHelper = false,
   sx,
-  debounceTime = 100,
   type = 'text',
   validationRegex,
   validationRegexMessage,
@@ -169,11 +167,8 @@ const ControlledTextField = <T extends FieldValues>({
   returnFormat,
   ...props
 }: TextfieldComponentProps<T> & ControlledTextFieldProps<T>) => {
-  const [internalValue, setInternalValue] = useState(
-    field.value ? String(field.value) : ''
-  );
-  const [debouncedValue] = useDebounce(internalValue, debounceTime);
   const [showPassword, setShowPassword] = useState(false);
+  const internalValue = field.value ? String(field.value) : '';
 
   const getConvertedValue = (value: string) => {
     if (returnFormat === 'number') {
@@ -182,15 +177,6 @@ const ControlledTextField = <T extends FieldValues>({
     }
     return value;
   };
-
-  useEffect(() => {
-    field.onChange(getConvertedValue(debouncedValue));
-  }, [debouncedValue, returnFormat]);
-
-  useEffect(() => {
-    const ext = field.value ? String(field.value) : '';
-    if (ext !== internalValue) setInternalValue(ext);
-  }, [field.value]);
 
   const handleChange = (raw: string) => {
     const sanitized = sanitizeInput(raw);
@@ -209,13 +195,13 @@ const ControlledTextField = <T extends FieldValues>({
       const floatRegex = /^(?:\d+)?(?:\.\d*)?$/;
       if (!floatRegex.test(value)) return;
 
-      if (applyMaxLength(value)) setInternalValue(value);
+      if (applyMaxLength(value)) field.onChange(getConvertedValue(value));
     };
 
     if (format === 'number') return handleNumber(sanitized);
 
     if (!applyMaxLength(sanitized)) return;
-    setInternalValue(sanitized);
+    field.onChange(getConvertedValue(sanitized));
   };
 
   const getEndAdornment = () => {
@@ -303,7 +289,6 @@ export const TextfieldComponent = <T extends FieldValues>({
   multiline = false,
   maxLength,
   sx,
-  debounceTime = 100,
   type = 'text',
   validationRegex,
   validationRegexMessage,
@@ -379,7 +364,6 @@ export const TextfieldComponent = <T extends FieldValues>({
               fieldState={fieldState}
               format={format}
               maxLength={maxLength}
-              debounceTime={debounceTime}
               startIcon={startIcon}
               endIcon={endIcon}
               helperText={helperText}
