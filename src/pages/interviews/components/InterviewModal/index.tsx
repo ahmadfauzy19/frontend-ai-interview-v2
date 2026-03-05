@@ -6,6 +6,7 @@ import { Box, Grid, Stack } from '@mui/material';
 import { useEffect } from 'react';
 import { purposeOptions } from './InterviewModal.const';
 import useInterviewModal from './InterviewModal.hooks';
+import { Icon } from '@iconify/react';
 
 const InterviewModal = ({
   open,
@@ -120,14 +121,12 @@ const InterviewModal = ({
               </Grid>
               <Grid size={12}>
                 <Box display="flex" gap={3} justifyContent="center">
-                  <ButtonComponent variant="contained" sx={{ borderRadius: 2 }}>
-                    Generate Questions
-                  </ButtonComponent>
                   <ButtonComponent
                     variant="contained"
                     sx={{ borderRadius: 2, paddingX: 4 }}
                     type="submit"
                     loading={isLoading}
+                    startIcon={<Icon icon="material-symbols:save" />}
                   >
                     Save
                   </ButtonComponent>
