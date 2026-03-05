@@ -39,10 +39,10 @@ const useLogin = () => {
     } catch (err) {
       console.error('Error Login: ', err);
 
-      if (axios.isAxiosError(err) && err.response?.status === 403) {
-        showSnackbar('Login Failed. Email or password is incorrect', 'error');
-      } else {
+      if (axios.isAxiosError(err) && err.response?.status === 500) {
         showSnackbar('Login Failed. Please try again.', 'error');
+      } else {
+        showSnackbar('Login Failed. Email or password is incorrect', 'error');
       }
 
       setIsLoading(false);
