@@ -16,6 +16,7 @@ const RecordInterviews = ({
   setInterviewState: (state: InterviewState) => void;
 }) => {
   const theme = useTheme();
+  const [allQuestion, setAllQuestion] = useState<Question[]>(questions);
   const [activeQuestion, setActiveQuestion] = useState(1);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(
     questions[0]
@@ -72,8 +73,6 @@ const RecordInterviews = ({
   const isPaused = currentRecording?.status === 'PAUSED';
   const isStopped = currentRecording?.status === 'STOPPED';
   const isLastQuestion = activeQuestion === questions.length;
-
-  console.log({ currentRecording });
 
   useEffect(() => {
     setCurrentQuestion(questions[activeQuestion - 1]);
@@ -143,6 +142,12 @@ const RecordInterviews = ({
         formData
       );
 
+      setAllQuestion(prev =>
+        prev.map(q =>
+          q.id === currentQuestion.id ? { ...q, isDone: true } : q
+        )
+      );
+
       if (type === 'finish') {
         setInterviewState('END');
         await clearAllRecordings();
@@ -187,9 +192,17 @@ const RecordInterviews = ({
           Questions
         </Typography>
         <Stack gap={1}>
-          {questions.map((question, index) => {
+          {allQuestion.map((question, index) => {
             const questionOrder = index + 1;
-            const currentQuestion = questionOrder === activeQuestion;
+            const isCurrentQuestion = questionOrder === activeQuestion;
+            const isDone = question.isDone;
+
+            const getBorderColor = () => {
+              if (isDone) return `1px solid ${theme.palette.success.main}`;
+              if (isCurrentQuestion)
+                return `1px solid ${theme.palette.primary.main}`;
+              return 'none';
+            };
 
             return (
               <Box
@@ -197,18 +210,18 @@ const RecordInterviews = ({
                 component="div"
                 sx={{
                   backgroundColor: 'white',
-                  border: currentQuestion
-                    ? `1px solid ${theme.palette.primary.main}`
-                    : 'none',
+                  border: getBorderColor(),
                   borderRadius: 2,
                   paddingY: 1.5,
                   paddingX: 3,
                   display: 'flex',
                   gap: 1,
-                  cursor: currentQuestion ? 'unset' : 'pointer',
+                  cursor:
+                    isCurrentQuestion || isDone ? 'not-allowed' : 'pointer',
                 }}
                 onClick={() => {
-                  if (!currentQuestion) return nextRecordVideo(questionOrder);
+                  if (!isCurrentQuestion && !isDone)
+                    return nextRecordVideo(questionOrder);
                 }}
               >
                 <Typography
@@ -221,11 +234,25 @@ const RecordInterviews = ({
                 <Typography
                   fontSize={14}
                   color={
-                    currentQuestion ? 'black' : theme.palette.text.secondary
+                    isCurrentQuestion ? 'black' : theme.palette.text.secondary
                   }
                 >
                   {question.questionText}
                 </Typography>
+                {isDone && (
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <Icon
+                      icon="material-symbols:check-circle"
+                      color={theme.palette.success.main}
+                      width={22}
+                      style={{ marginLeft: 'auto', flexShrink: 0 }}
+                    />
+                  </Box>
+                )}
               </Box>
             );
           })}

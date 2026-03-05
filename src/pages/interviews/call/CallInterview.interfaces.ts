@@ -17,6 +17,7 @@ export interface Question {
   id: string;
   questionText: string;
   orderNumber: number;
+  isDone?: boolean;
 }
 
 export interface CameraState {
