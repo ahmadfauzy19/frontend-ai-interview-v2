@@ -1,3 +1,4 @@
+import { useAuth } from '@/context/auth/AuthContext';
 import InterviewCardLoading from '@/pages/interviews/components/InterviewCardLoading';
 import { Box, Stack, Typography } from '@mui/material';
 import CreateInterviewCard from './components/CreateInterviewCard';
@@ -14,6 +15,8 @@ const InterviewsPage = () => {
     getInterviews,
   } = useInterviews();
 
+  const { userData } = useAuth();
+
   return (
     <Box flexGrow={1}>
       <Stack gap={3}>
@@ -21,7 +24,9 @@ const InterviewsPage = () => {
           My Interview
         </Typography>
         <Box display="flex" gap={3} flexWrap="wrap">
-          <CreateInterviewCard handleClick={handleOpenModal} />
+          {userData?.role !== 'CANDIDATE' && (
+            <CreateInterviewCard handleClick={handleOpenModal} />
+          )}
           {!isLoading &&
             interviewData.map(interview => (
               <InterviewCard key={interview.id} data={interview} />
