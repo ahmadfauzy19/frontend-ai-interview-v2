@@ -3,10 +3,12 @@ import { Icon } from '@iconify/react';
 import { Box, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ButtonComponent } from '../../../../components/ButtonComponent';
+import CopyToClipboardButton from '../CopyToClipboardButton';
 
 const InterviewCard = ({ data, role }: { data: Interviews; role: string }) => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const currentUrl = window.location.href;
 
   const handleStartInterview = () => {
     window.open(`/interviews/call/${data.id}`, '_blank');
@@ -26,8 +28,19 @@ const InterviewCard = ({ data, role }: { data: Interviews; role: string }) => {
         borderRadius: 2,
         boxShadow: 2,
         overflow: 'hidden',
+        position: 'relative',
       }}
     >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 8,
+          right: 8,
+          zIndex: 1,
+        }}
+      >
+        <CopyToClipboardButton textToCopy={`${currentUrl}/${data.id}`} />
+      </Box>
       <Box
         sx={{
           backgroundColor: theme.palette.primary.main,
