@@ -1,3 +1,4 @@
+import { useSnackbar } from '@/context/snackbar/SnackbarContext';
 import axiosUtils from '@/utils/axiosUtils';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -8,6 +9,7 @@ const useInterviewAnswer = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingDownload, setIsLoadingDownload] = useState(false);
   const { userId, id } = useParams();
+  const { showSnackbar } = useSnackbar();
 
   async function fetchCandidateAnswer() {
     setIsLoading(true);
@@ -41,8 +43,26 @@ const useInterviewAnswer = () => {
       window.URL.revokeObjectURL(url);
 
       setIsLoadingDownload(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Download error:', error);
+      if (error.response && error.response.data instanceof Blob) {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          const errorData = JSON.parse(reader.result as string);
+          const errorMessage = errorData.message;
+          console.error('Error Message:', errorMessage);
+          showSnackbar(errorMessage, 'error');
+        };
+
+        reader.readAsText(error.response.data);
+      } else {
+        const genericMessage =
+          error.response?.data?.message || 'Terjadi kesalahan sistem';
+        showSnackbar(genericMessage, 'error');
+      }
+
+      setIsLoadingDownload(false);
     }
   };
 
