@@ -22,4 +22,5 @@ export interface Interviews {
   status: string;
   createdBy: string;
   createdAt: string;
+  isAnswered: boolean;
 }

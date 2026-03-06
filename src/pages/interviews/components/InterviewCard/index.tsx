@@ -4,7 +4,7 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ButtonComponent } from '../../../../components/ButtonComponent';
 
-const InterviewCard = ({ data }: { data: Interviews }) => {
+const InterviewCard = ({ data, role }: { data: Interviews; role: string }) => {
   const theme = useTheme();
   const navigate = useNavigate();
 
@@ -71,28 +71,31 @@ const InterviewCard = ({ data }: { data: Interviews }) => {
             fullWidth
             startIcon={<Icon icon="mdi:camera-outline" />}
             onClick={handleStartInterview}
+            disabled={data.isAnswered}
           >
             Start Interview
           </ButtonComponent>
-          <ButtonComponent
-            variant="contained"
-            size="small"
-            sx={{
-              borderRadius: 1,
-              fontSize: 12,
-              backgroundColor: 'white',
-              color: 'black',
-              boxShadow: 2,
-              '&:hover': {
+          {role !== 'CANDIDATE' && (
+            <ButtonComponent
+              variant="contained"
+              size="small"
+              sx={{
+                borderRadius: 1,
+                fontSize: 12,
+                backgroundColor: 'white',
+                color: 'black',
                 boxShadow: 2,
-              },
-            }}
-            fullWidth
-            startIcon={<Icon icon="solar:document-linear" />}
-            onClick={handleInterviewResult}
-          >
-            See interview result
-          </ButtonComponent>
+                '&:hover': {
+                  boxShadow: 2,
+                },
+              }}
+              fullWidth
+              startIcon={<Icon icon="solar:document-linear" />}
+              onClick={handleInterviewResult}
+            >
+              See interview result
+            </ButtonComponent>
+          )}
         </Box>
       </Box>
     </Box>

@@ -29,7 +29,11 @@ const InterviewsPage = () => {
           )}
           {!isLoading &&
             interviewData.map(interview => (
-              <InterviewCard key={interview.id} data={interview} />
+              <InterviewCard
+                key={interview.id}
+                data={interview}
+                role={userData.role}
+              />
             ))}
 
           {isLoading &&
