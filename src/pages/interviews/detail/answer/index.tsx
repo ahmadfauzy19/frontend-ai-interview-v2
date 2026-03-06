@@ -4,7 +4,6 @@ import {
   Avatar,
   Box,
   Divider,
-  Grid,
   Skeleton,
   Typography,
   useTheme,
@@ -139,6 +138,24 @@ const InterviewAnswerPage = () => {
                     gap={3}
                   >
                     <Box display="flex" flexDirection="column" gap={2}>
+                      <Box display="flex" gap={1}>
+                        <video width="400" controls>
+                          <source src={item.videoUrl} />
+                        </video>
+                        <Box display="flex" alignItems="flex-end">
+                          <ButtonComponent
+                            variant="icon"
+                            onClick={() => handleDownload(item.fileName)}
+                            loading={isLoadingDownload}
+                          >
+                            <Icon
+                              icon="lucide:download"
+                              width={22}
+                              height={22}
+                            />
+                          </ButtonComponent>
+                        </Box>
+                      </Box>
                       <Box display="flex" gap={1} flexDirection="column">
                         <Box display="flex" gap={1}>
                           <Typography fontSize={14} fontWeight={600}>
@@ -157,34 +174,12 @@ const InterviewAnswerPage = () => {
                           </Typography>
                         </Box>
                         <Box display="flex" flexDirection="column">
-                          <Grid size={1}>
-                            <Typography fontSize={14} fontWeight={600}>
-                              Answer {index + 1}:
-                            </Typography>
-                          </Grid>
-                          <Grid size={11}>
-                            <Typography fontSize={14}>
-                              {item.answerTranscript}
-                            </Typography>
-                          </Grid>
-                        </Box>
-                      </Box>
-                      <Box display="flex" gap={1}>
-                        <video width="400" controls>
-                          <source src={item.videoUrl} />
-                        </video>
-                        <Box display="flex" alignItems="flex-end">
-                          <ButtonComponent
-                            variant="icon"
-                            onClick={() => handleDownload(item.fileName)}
-                            loading={isLoadingDownload}
-                          >
-                            <Icon
-                              icon="lucide:download"
-                              width={22}
-                              height={22}
-                            />
-                          </ButtonComponent>
+                          <Typography fontSize={14} fontWeight={600}>
+                            Answer {index + 1}:
+                          </Typography>
+                          <Typography fontSize={14}>
+                            {item.answerTranscript}
+                          </Typography>
                         </Box>
                       </Box>
                     </Box>
