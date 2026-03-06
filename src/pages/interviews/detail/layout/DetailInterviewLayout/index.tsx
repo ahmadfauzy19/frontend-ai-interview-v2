@@ -3,14 +3,21 @@ import SwitchComponent from '@/components/Form/SwitchComponent';
 import { Icon } from '@iconify/react';
 import { Box, Divider, Grid, Typography, useTheme } from '@mui/material';
 import UserResponseCard from '../../components/UserResponseCard';
-import { dummyUserReponse, filterOptions } from '../../DetailInterview.const';
+import UserResponseCardLoading from '../../components/UserResponseCardLoading';
+import { filterOptions } from '../../DetailInterview.const';
 import useDetailInterview from '../../DetailInterview.hooks';
 
+/*
+  Code yang dikomen itu karna penyesuaian data di BE dengan tampilan di FoloUp, jadi nanti kalo dari BE sudah dihandle bisa dinyalakan lagi
+*/
+
 const DetailInterviewLayout = ({ children }: { children: React.ReactNode }) => {
-  //   const navigate = useNavigate();
+  // const navigate = useNavigate();
   //   const { id } = useParams();
   const theme = useTheme();
-  const { method } = useDetailInterview();
+
+  const { method, candidateList, isLoadingCandidateList } =
+    useDetailInterview();
 
   //   const handleEdit = () => {
   //     navigate(`/interviews/${id}/edit`);
@@ -27,8 +34,9 @@ const DetailInterviewLayout = ({ children }: { children: React.ReactNode }) => {
         <Divider orientation="vertical" flexItem />
         <Box display="flex" gap={1}>
           <Icon icon="material-symbols:person-outline" width={24} height={24} />
-          <Typography>: 1</Typography>
+          <Typography>: {candidateList?.length || 0}</Typography>
         </Box>
+        {/* EDIT BUTTON */}
         {/* <Divider orientation="vertical" flexItem /> */}
         {/* <Box
           component="div"
@@ -91,9 +99,11 @@ const DetailInterviewLayout = ({ children }: { children: React.ReactNode }) => {
                 }
               />
             </Box>
-            {dummyUserReponse.map(item => (
-              <UserResponseCard key={item.id} data={item} />
-            ))}
+            {isLoadingCandidateList && <UserResponseCardLoading />}
+            {!isLoadingCandidateList &&
+              candidateList.map(item => (
+                <UserResponseCard key={item.candidateId} data={item} />
+              ))}
           </Box>
         </Grid>
         <Grid

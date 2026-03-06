@@ -1,17 +1,41 @@
 import { ButtonComponent } from '@/components/ButtonComponent';
 import { Icon } from '@iconify/react';
-import { Avatar, Box, Typography, useTheme } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Divider,
+  Grid,
+  Skeleton,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import DetailInterviewLayout from '../layout/DetailInterviewLayout';
-import { dummyDetailAnswer } from './InterviewAnswer.const';
+import useInterviewAnswer from './InterviewAnswer.hooks';
 
 const InterviewAnswerPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { answerCandidate, isLoading, id, handleDownload, isLoadingDownload } =
+    useInterviewAnswer();
 
   const handleBack = () => {
-    navigate(-1);
+    navigate(`/interviews/${id}`);
   };
+
+  function stringAvatar(name: string) {
+    if (isLoading || !name) {
+      return { children: '' };
+    }
+
+    const parts = name.trim().split(' ');
+    const firstInitial = parts[0]?.[0] || '';
+    const secondInitial = parts[1]?.[0] || '';
+
+    return {
+      children: `${firstInitial}${secondInitial}`.toUpperCase(),
+    };
+  }
 
   const style = {
     cardContainer: {
@@ -50,62 +74,37 @@ const InterviewAnswerPage = () => {
             Back to summary
           </ButtonComponent>
           <Box display="flex" alignItems="center" gap={2}>
-            <Avatar>T</Avatar>
+            <Avatar {...stringAvatar(answerCandidate?.name || '')} />
             <Box>
-              <Typography fontSize={14} fontWeight={600}>
-                {dummyDetailAnswer.name}
-              </Typography>
-              <Typography fontSize={14}>{dummyDetailAnswer.email}</Typography>
+              {isLoading ? (
+                <Skeleton width={100} />
+              ) : (
+                <Typography fontSize={14} fontWeight={600}>
+                  {answerCandidate?.name}
+                </Typography>
+              )}
+              {/* <Typography fontSize={14}>{dummyDetailAnswer.email}</Typography> */}
             </Box>
           </Box>
           <Typography fontSize={18} fontWeight={600}>
-            Interview Recording
+            Interview Summary
           </Typography>
-          <Box display="flex" gap={0.5}>
-            <audio controls>
-              <source
-                src={dummyDetailAnswer.interviewAudio}
-                type="audio/mpeg"
-              />
-              Browser Anda tidak mendukung elemen audio.
-            </audio>
-            <ButtonComponent variant="icon">
-              <Icon icon="lucide:download" width={22} height={22} />
-            </ButtonComponent>
-          </Box>
-        </Box>
-
-        <Box sx={style.cardContainer}>
-          <Typography fontSize={18} fontWeight={600}>
-            General Summary
-          </Typography>
-          <Box
-            sx={{
-              backgroundColor: theme.palette.background.paper,
-              padding: 2,
-              borderRadius: 3,
-              display: 'flex',
-              flexDirection: 'column',
-              width: '35%',
-              gap: 2,
-            }}
-          >
-            <Box display="flex" alignItems="center" gap={1}>
+          <Box display="flex" flexDirection="column" gap={0.5}>
+            {isLoading ? (
+              <Skeleton width={200} />
+            ) : (
               <Typography fontSize={14}>
-                User Sentimental: {dummyDetailAnswer.userSentiment}{' '}
+                Total Score: {answerCandidate?.totalScore || 0}
               </Typography>
-              <Box
-                sx={{
-                  width: 10,
-                  height: 10,
-                  backgroundColor: theme.palette.warning.light,
-                  borderRadius: 3,
-                }}
-              />
-            </Box>
-            <Typography fontSize={14}>
-              Call Summary: {dummyDetailAnswer.callSummary}
-            </Typography>
+            )}
+            {isLoading ? (
+              <Skeleton width={200} />
+            ) : (
+              <Typography fontSize={14}>
+                Final Recommendation:{' '}
+                {answerCandidate?.finalRecommendation || '-'}
+              </Typography>
+            )}
           </Box>
         </Box>
 
@@ -124,14 +123,76 @@ const InterviewAnswerPage = () => {
             }}
           >
             <Box display="flex" flexDirection="column" gap={1}>
-              {dummyDetailAnswer.transcript.map(item => (
-                <Box key={item.id} display="flex" gap={1}>
-                  <Typography fontSize={14} fontWeight={600}>
-                    {item.name}:
-                  </Typography>
-                  <Typography fontSize={14}>{item.value}</Typography>
+              {isLoading && (
+                <Box display="flex" flexDirection="column" gap={1}>
+                  <Skeleton width={200} />
+                  <Skeleton width={200} />
+                  <Skeleton height={100} />
                 </Box>
-              ))}
+              )}
+              {!isLoading &&
+                answerCandidate?.answers.map((item, index) => (
+                  <Box
+                    key={item.questionId}
+                    display="flex"
+                    flexDirection="column"
+                    gap={3}
+                  >
+                    <Box display="flex" flexDirection="column" gap={2}>
+                      <Box display="flex" gap={1} flexDirection="column">
+                        <Box display="flex" gap={1}>
+                          <Typography fontSize={14} fontWeight={600}>
+                            Score:
+                          </Typography>
+                          <Typography fontSize={14}>
+                            {item.score || 0}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" flexDirection="column">
+                          <Typography fontSize={14} fontWeight={600}>
+                            Question {index + 1}:
+                          </Typography>
+                          <Typography fontSize={14}>
+                            {item.questionText}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" flexDirection="column">
+                          <Grid size={1}>
+                            <Typography fontSize={14} fontWeight={600}>
+                              Answer {index + 1}:
+                            </Typography>
+                          </Grid>
+                          <Grid size={11}>
+                            <Typography fontSize={14}>
+                              {item.answerTranscript}
+                            </Typography>
+                          </Grid>
+                        </Box>
+                      </Box>
+                      <Box display="flex" gap={1}>
+                        <video width="400" controls>
+                          <source src={item.videoUrl} />
+                        </video>
+                        <Box display="flex" alignItems="flex-end">
+                          <ButtonComponent
+                            variant="icon"
+                            onClick={() => handleDownload(item.fileName)}
+                            loading={isLoadingDownload}
+                          >
+                            <Icon
+                              icon="lucide:download"
+                              width={22}
+                              height={22}
+                            />
+                          </ButtonComponent>
+                        </Box>
+                      </Box>
+                    </Box>
+                    {index !== answerCandidate?.answers.length - 1 && (
+                      <Divider color="black" />
+                    )}
+                  </Box>
+                ))}
             </Box>
           </Box>
         </Box>
