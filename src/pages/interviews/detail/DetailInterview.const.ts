@@ -1,8 +1,5 @@
 import type { FormOption } from '@/components/Form/Form.interfaces';
-import type {
-  DetailInterview,
-  OverallScore,
-} from './DetailInterview.interfaces';
+import type { OverallScore } from './DetailInterview.interfaces';
 
 export const filterOptions: FormOption[] = [
   {
@@ -24,15 +21,6 @@ export const filterOptions: FormOption[] = [
   {
     label: 'Selected',
     value: 'Selected',
-  },
-];
-
-export const dummyUserReponse: DetailInterview[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    interviewTime: '02-03-2026 10:35',
-    status: 'Selected',
   },
 ];
 

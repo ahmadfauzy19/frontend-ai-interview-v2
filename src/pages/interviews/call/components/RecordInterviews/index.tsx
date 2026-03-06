@@ -323,6 +323,7 @@ const RecordInterviews = ({
               onClick={pauseRecordVideo}
               disabled={isLoading}
               startIcon={<Icon icon="material-symbols:pause" />}
+              color="warning"
             >
               Pause Record
             </ButtonComponent>
@@ -333,6 +334,7 @@ const RecordInterviews = ({
               onClick={stopRecordVideo}
               disabled={isLoading}
               startIcon={<Icon icon="material-symbols:stop-rounded" />}
+              color="error"
             >
               Stop Record
             </ButtonComponent>
@@ -343,6 +345,7 @@ const RecordInterviews = ({
               onClick={() => submitRecord(activeQuestion + 1, 'next')}
               loading={isLoading}
               startIcon={<Icon icon="material-symbols:send" />}
+              color="success"
             >
               Submit & Next
             </ButtonComponent>
