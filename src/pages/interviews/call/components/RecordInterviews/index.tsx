@@ -274,6 +274,7 @@ const RecordInterviews = ({
               <video
                 ref={recording.webcamRef}
                 autoPlay
+                muted
                 width="100%"
                 height="auto"
               />

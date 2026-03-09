@@ -39,7 +39,7 @@ const InterviewCard = ({ data, role }: { data: Interviews; role: string }) => {
           zIndex: 1,
         }}
       >
-        <CopyToClipboardButton textToCopy={`${currentUrl}/${data.id}`} />
+        <CopyToClipboardButton textToCopy={`${currentUrl}/call/${data.id}`} />
       </Box>
       <Box
         sx={{
