@@ -1,3 +1,4 @@
+import { useState } from "react";
 import TableComponent from '@/components/Table/TableComponent';
 import type { TableHeader } from '@/components/Table/TableComponent/TableComponent.interfaces';
 import { Icon } from '@iconify/react';
@@ -8,12 +9,20 @@ import { dummyOverall } from './DetailInterview.const';
 import useDetailInterview from './DetailInterview.hooks';
 import type { OverallScore } from './DetailInterview.interfaces';
 import DetailInterviewLayout from './layout/DetailInterviewLayout';
+import {
+  Button
+} from "@mui/material";
+
+import InterviewDetailModal from "./components/InterviewDetailModal";
 
 const InterviewDetailPage = () => {
   const theme = useTheme();
-  const { method, handleSortChange } = useDetailInterview();
+  const { method, handleSortChange, detailInterview } = useDetailInterview();
   const location = useLocation();
   const currentPath = location.pathname;
+  const [openDetail, setOpenDetail] = useState(false);
+  const handleOpenDetail = () => setOpenDetail(true);
+  const handleCloseDetail = () => setOpenDetail(false);
 
   const tableHeader: TableHeader[] = [
     {
@@ -95,13 +104,24 @@ const InterviewDetailPage = () => {
           backgroundColor: theme.palette.primary.light,
         }}
       >
-        <Typography fontSize={18} fontWeight={600}>
-          Overall Analysis
-        </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography fontSize={18} fontWeight={600}>
+            Overall Analysis
+          </Typography>
+
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={handleOpenDetail}
+            startIcon={<Icon icon="lucide:eye" />}
+          >
+            Lihat Detail
+          </Button>
+        </Box>
         <Box display="flex" gap={0.5}>
           <Typography fontSize={14}>Interview Description:</Typography>
           <Typography fontSize={14} fontWeight={600}>
-            Test
+            {detailInterview?.context}
           </Typography>
         </Box>
         <Box
@@ -290,6 +310,11 @@ const InterviewDetailPage = () => {
           </Box>
         </Box>
       </Box>
+      <InterviewDetailModal
+        open={openDetail}
+        onClose={handleCloseDetail}
+        detailInterview={detailInterview}
+      />
     </DetailInterviewLayout>
   );
 };
