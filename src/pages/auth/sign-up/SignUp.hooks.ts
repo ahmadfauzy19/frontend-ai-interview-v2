@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import type { SignUpForm } from '../Auth.interfaces';
+import { useLocation } from 'react-router-dom'; 
 
 const useSignUp = () => {
   const method = useForm<SignUpForm>({
@@ -19,6 +20,9 @@ const useSignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
+  const location = useLocation();
+
+  const from = location.state?.from;
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -29,7 +33,9 @@ const useSignUp = () => {
 
       await axios.post(`${baseURL}/auth/register`, values);
       setIsLoading(false);
-      navigate('/');
+      navigate("/", {
+        state: { from }
+      });
 
       showSnackbar('Account Created. Please login to continue', 'success');
     } catch (err) {

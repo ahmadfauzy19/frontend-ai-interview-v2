@@ -5,9 +5,11 @@ import { Link, Stack } from '@mui/material';
 import AuthCard from '../components/auth-card';
 import { roleOptions } from './SignUp.const';
 import useSignUp from './SignUp.hooks';
+import { Link as RouterLink, useLocation } from "react-router-dom";
 
 const SignUpPage = () => {
   const { method, onSubmit, isLoading } = useSignUp();
+  const location = useLocation();
 
   return (
     <AuthCard title="Sign Up">
@@ -49,14 +51,16 @@ const SignUpPage = () => {
             placeholder="Role"
           />
           <Link
-            href="/"
-            underline="none"
-            sx={{
-              fontSize: '14px',
-              display: 'flex',
-              justifyContent: 'flex-end',
-            }}
-          >
+              component={RouterLink}
+              to="/"
+              state={{ from: location.state?.from }}
+              underline="none"
+              sx={{
+                fontSize: '14px',
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }}
+            >
             Already have account?
           </Link>
           <ButtonComponent
