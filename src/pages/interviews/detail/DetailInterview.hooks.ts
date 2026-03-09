@@ -3,7 +3,7 @@ import axiosUtils from '@/utils/axiosUtils';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import type { CandidateInterview } from './DetailInterview.interfaces';
+import type { CandidateInterview, DetailInterview } from './DetailInterview.interfaces';
 
 const useDetailInterview = () => {
   const method = useForm({
@@ -19,6 +19,7 @@ const useDetailInterview = () => {
 
   const { id } = useParams();
   const [candidateList, setCandidateList] = useState<CandidateInterview[]>([]);
+  const [detailInterview, setDetailInterview] = useState<DetailInterview>();
   const [isLoadingCandidateList, setIsLoadingCandidateList] = useState(false);
 
   const handleSortChange = (tSort: TableSorting) => {
@@ -33,11 +34,19 @@ const useDetailInterview = () => {
     setIsLoadingCandidateList(false);
   }
 
+  async function fetchDetailInterview(id:any) {
+    setIsLoadingCandidateList(true);
+    const res = await axiosUtils.get(`/interviews/${id}`);
+    setDetailInterview(res.data);
+    setIsLoadingCandidateList(false);
+  }
+
   useEffect(() => {
     fetchCandidateList();
+    fetchDetailInterview(id);
   }, [id]);
 
-  return { method, handleSortChange, candidateList, isLoadingCandidateList };
+  return { method, handleSortChange, candidateList, isLoadingCandidateList, detailInterview };
 };
 
 export default useDetailInterview;

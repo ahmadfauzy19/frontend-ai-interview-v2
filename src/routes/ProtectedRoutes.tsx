@@ -17,7 +17,13 @@ const ProtectedRoute = ({ role }: ProtectedRouteProps) => {
     const roles = Array.isArray(role) ? role : [role];
 
     if (!roles.includes(userData?.role)) {
-      return <Navigate to="/403" replace />;
+      return (
+        <Navigate
+          to="/403"
+          state={{ requiredRole: roles }}
+          replace
+        />
+      );
     }
   }
 

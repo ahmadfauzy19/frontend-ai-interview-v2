@@ -12,16 +12,10 @@ import useDetailInterview from '../../DetailInterview.hooks';
 */
 
 const DetailInterviewLayout = ({ children }: { children: React.ReactNode }) => {
-  // const navigate = useNavigate();
-  //   const { id } = useParams();
   const theme = useTheme();
 
-  const { method, candidateList, isLoadingCandidateList } =
+  const { method, candidateList, isLoadingCandidateList , detailInterview} =
     useDetailInterview();
-
-  //   const handleEdit = () => {
-  //     navigate(`/interviews/${id}/edit`);
-  //   };
 
   return (
     <Box
@@ -29,35 +23,13 @@ const DetailInterviewLayout = ({ children }: { children: React.ReactNode }) => {
     >
       <Box display="flex" justifyContent="center" gap={2}>
         <Typography fontSize={18} fontWeight={700}>
-          Title Interview
+          {detailInterview?.name}
         </Typography>
         <Divider orientation="vertical" flexItem />
         <Box display="flex" gap={1}>
           <Icon icon="material-symbols:person-outline" width={24} height={24} />
           <Typography>: {candidateList?.length || 0}</Typography>
         </Box>
-        {/* EDIT BUTTON */}
-        {/* <Divider orientation="vertical" flexItem /> */}
-        {/* <Box
-          component="div"
-          sx={{
-            cursor: 'pointer',
-            display: 'flex',
-            gap: 1,
-            alignItems: 'center',
-          }}
-          onClick={handleEdit}
-        >
-          <Icon
-            icon="material-symbols:edit-outline"
-            width={24}
-            height={24}
-            color={theme.palette.primary.main}
-          />
-          <Typography fontSize={14} color={theme.palette.primary.main}>
-            Edit
-          </Typography>
-        </Box> */}
         <Divider orientation="vertical" flexItem />
         <Box display="flex" gap={1} alignItems="center">
           <Typography fontSize={14}>Active</Typography>
