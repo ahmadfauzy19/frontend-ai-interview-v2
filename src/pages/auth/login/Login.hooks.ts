@@ -56,7 +56,9 @@ const useLogin = () => {
   };
 
   const handleNavigateSignUp = () => {
-    navigate('/sign-up');
+    navigate('/sign-up', {
+      state: { from: location.state?.from }
+    });
   };
 
   return { method, onSubmit, handleNavigateSignUp, isLoading };
