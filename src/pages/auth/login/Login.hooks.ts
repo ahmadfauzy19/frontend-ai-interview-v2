@@ -3,7 +3,7 @@ import { useSnackbar } from '@/context/snackbar/SnackbarContext';
 import axios from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import type { LoginForm } from '../Auth.interfaces';
 
 const useLogin = () => {
@@ -11,7 +11,9 @@ const useLogin = () => {
   const { login } = useAuth();
   const { showSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
 
+  
   const method = useForm<LoginForm>({
     defaultValues: {
       email: '',
@@ -19,7 +21,8 @@ const useLogin = () => {
     },
     mode: 'onTouched',
   });
-
+  
+  const from = location.state?.from?.pathname || "/interviews";
   const onSubmit = async () => {
     setIsLoading(true);
 
@@ -31,8 +34,11 @@ const useLogin = () => {
 
       const data = res.data;
       login(data);
-
-      navigate('/interviews');
+      if(from !== "/interviews"){
+        window.open(from, '_blank');
+      }else {
+        navigate(from, { replace: true });
+      }
       showSnackbar('Login Success', 'success');
 
       setIsLoading(false);
