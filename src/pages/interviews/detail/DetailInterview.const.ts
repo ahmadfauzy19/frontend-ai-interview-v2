@@ -1,5 +1,5 @@
 import type { FormOption } from '@/components/Form/Form.interfaces';
-import type { OverallScore } from './DetailInterview.interfaces';
+// import type { OverallScore } from './DetailInterview.interfaces';
 
 export const filterOptions: FormOption[] = [
   {
@@ -24,12 +24,12 @@ export const filterOptions: FormOption[] = [
   },
 ];
 
-export const dummyOverall: OverallScore[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    communicationScore: 5,
-    overallScore: 5,
-    summary: 'This is a summary',
-  },
-];
+// export const dummyOverall: OverallScore[] = [
+//   {
+//     candidateId: '1',
+//     name: 'John Doe',
+//     communicationScore: 5,
+//     overallScore: 5,
+//     summary: 'This is a summary',
+//   },
+// ];

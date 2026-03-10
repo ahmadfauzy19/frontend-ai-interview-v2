@@ -5,7 +5,6 @@ import { Icon } from '@iconify/react';
 import { Box, Tooltip, Typography, useTheme } from '@mui/material';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Link, useLocation } from 'react-router-dom';
-import { dummyOverall } from './DetailInterview.const';
 import useDetailInterview from './DetailInterview.hooks';
 import type { OverallScore } from './DetailInterview.interfaces';
 import DetailInterviewLayout from './layout/DetailInterviewLayout';
@@ -23,8 +22,6 @@ const InterviewDetailPage = () => {
   const [openDetail, setOpenDetail] = useState(false);
   const handleOpenDetail = () => setOpenDetail(true);
   const handleCloseDetail = () => setOpenDetail(false);
-
-  console.log(candidateList);
 
   const tableHeader: TableHeader[] = [
     {
@@ -129,7 +126,6 @@ const InterviewDetailPage = () => {
         >
           <TableComponent
             tableHeader={tableHeader}
-            // tableData={dummyOverall as unknown as Record<string, string>[]}
             tableData={candidateList as unknown as Record<string, string>[]}
             minWidth="900px"
             renderPagination={false}
@@ -139,7 +135,7 @@ const InterviewDetailPage = () => {
             onPageChange={page => method.setValue('page', page)}
             onPageSizeChange={pageSize => method.setValue('size', pageSize)}
             onSort={handleSortChange}
-            totalData={dummyOverall.length}
+            totalData={candidateList.length}
           />
         </Box>
         <Box display="flex" gap={3} justifyContent="center">
