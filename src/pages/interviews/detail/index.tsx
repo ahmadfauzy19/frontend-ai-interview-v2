@@ -17,25 +17,27 @@ import InterviewDetailModal from "./components/InterviewDetailModal";
 
 const InterviewDetailPage = () => {
   const theme = useTheme();
-  const { method, handleSortChange, detailInterview } = useDetailInterview();
+  const { method, handleSortChange, detailInterview, candidateList } = useDetailInterview();
   const location = useLocation();
   const currentPath = location.pathname;
   const [openDetail, setOpenDetail] = useState(false);
   const handleOpenDetail = () => setOpenDetail(true);
   const handleCloseDetail = () => setOpenDetail(false);
 
+  console.log(candidateList);
+
   const tableHeader: TableHeader[] = [
     {
       key: 'name',
       label: 'Name',
       sort: true,
-      sx: { width: '15%' },
+      sx: { width: '30%' },
       labelAlign: 'center',
       render: row => {
         const r = row as unknown as OverallScore;
         return (
           <Box display="flex" gap={1}>
-            <Link to={`${currentPath}/answer/${r.id}`}>
+            <Link to={`${currentPath}/answer/${r.candidateId}`}>
               <Icon
                 icon="lucide:external-link"
                 width={20}
@@ -49,27 +51,20 @@ const InterviewDetailPage = () => {
       },
     },
     {
-      key: 'overallScore',
-      label: 'Overall Score',
+      key: 'totalScore',
+      label: 'Total Score',
       sort: true,
       sx: { width: '16%', textAlign: 'center' },
       labelAlign: 'center',
     },
     {
-      key: 'communicationScore',
-      label: 'Communication Score',
-      sort: true,
-      sx: { width: '22%', textAlign: 'center' },
-      labelAlign: 'center',
-    },
-    {
-      key: 'summary',
+      key: 'finalRecommendation',
       label: 'Summary',
       sx: { width: 'auto' },
       labelAlign: 'center',
       render: row => {
         const r = row as unknown as OverallScore;
-        return <Typography fontSize={12}>{r.summary}</Typography>;
+        return <Typography fontSize={12}>{r.finalRecommendation}</Typography>;
       },
     },
   ];
@@ -134,7 +129,8 @@ const InterviewDetailPage = () => {
         >
           <TableComponent
             tableHeader={tableHeader}
-            tableData={dummyOverall as unknown as Record<string, string>[]}
+            // tableData={dummyOverall as unknown as Record<string, string>[]}
+            tableData={candidateList as unknown as Record<string, string>[]}
             minWidth="900px"
             renderPagination={false}
             maxHeight="30vh"

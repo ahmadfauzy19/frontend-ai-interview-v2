@@ -28,9 +28,9 @@ export interface InterviewQuestion {
 }
 
 export interface OverallScore {
-  id: string;
+  candidateId: string;
   name: string;
   communicationScore: number;
-  overallScore: number;
-  summary: string;
+  totalScore: number;
+  finalRecommendation: string;
 }
