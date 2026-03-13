@@ -43,13 +43,13 @@ const AppRoutes = () => {
         </Route>
       </Route>
       <Route element={ <ProtectedRoute role={["ADMIN","INTERVIEWER"]}/> }>
-        <Route element={<MainLayout />}>
+        {/* <Route element={<MainLayout />}> */}
           <Route path="/interviews/:id" element={<DetailInterviewPage />} />
           <Route
             path="/interviews/:id/answer/:userId"
             element={<InterviewAnswerPage />}
           />
-        </Route>
+        {/* </Route> */}
       </Route>
       <Route element={ <ProtectedRoute role={"CANDIDATE"}/> }>
         <Route path="/interviews/call/:id" element={<CallInterviewPage />} />

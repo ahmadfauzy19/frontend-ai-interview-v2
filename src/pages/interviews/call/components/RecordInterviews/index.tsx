@@ -29,6 +29,9 @@ const RecordInterviews = ({
   const [timer, setTimer] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const [breakTime, setBreakTime] = useState(0);
+  const breakTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const startTimer = () => {
     setTimer(0);
     timerRef.current = setInterval(() => {
@@ -57,6 +60,26 @@ const RecordInterviews = ({
     return `${m}m ${s}s`;
   };
 
+  const startBreakTimer = () => {
+    if (breakTimerRef.current) return;
+
+    breakTimerRef.current = setInterval(() => {
+      setBreakTime(prev => prev + 1);
+    }, 1000);
+  };
+
+  const stopBreakTimer = () => {
+    if (breakTimerRef.current) {
+      clearInterval(breakTimerRef.current);
+      breakTimerRef.current = null;
+    }
+  };
+
+  const resetBreakTimer = () => {
+    stopBreakTimer();
+    setBreakTime(0);
+  };
+
   const {
     createRecording,
     activeRecordings,
@@ -81,6 +104,7 @@ const RecordInterviews = ({
   useEffect(() => {
     initRecording();
     setTimer(0);
+    startBreakTimer(); 
   }, []);
 
   const initRecording = async () => {
@@ -91,6 +115,7 @@ const RecordInterviews = ({
   };
 
   const recordVideo = async () => {
+    stopBreakTimer();
     if (isPaused) {
       resumeTimer();
       await resumeRecording(recordId);
@@ -103,16 +128,20 @@ const RecordInterviews = ({
   const pauseRecordVideo = async () => {
     await pauseRecording(recordId);
     stopTimer();
+    startBreakTimer();
   };
 
   const stopRecordVideo = async () => {
     await stopRecording(recordId);
     stopTimer();
+    stopBreakTimer(); 
   };
 
   const nextRecordVideo = async (index: number) => {
     stopTimer();
     setTimer(0);
+    resetBreakTimer();
+    startBreakTimer();
     setActiveQuestion(index);
     await clearAllRecordings();
 
@@ -136,6 +165,8 @@ const RecordInterviews = ({
 
         formData.append('video', videoFile);
       }
+      formData.append('breakTIme', breakTime.toString());
+      formData.append('answerTime', timer.toString());
 
       await axiosUtils.post(
         `/answers/upload?questionId=${currentQuestion.id}&userId=${userData.userId}`,
@@ -147,6 +178,8 @@ const RecordInterviews = ({
           q.id === currentQuestion.id ? { ...q, isDone: true } : q
         )
       );
+
+      resetBreakTimer();
 
       if (type === 'finish') {
         setInterviewState('END');
@@ -161,6 +194,7 @@ const RecordInterviews = ({
           setRecordId(newRecording.id);
           await openCamera(newRecording.id);
         }
+        startBreakTimer();
       }
 
       setIsLoading(false);
@@ -281,7 +315,7 @@ const RecordInterviews = ({
             </Box>
           ))}
         </Box>
-        {isRecording && (
+        {isRecording ? (
           <Box
             sx={{
               display: 'flex',
@@ -301,6 +335,22 @@ const RecordInterviews = ({
               }}
             />
             <Typography fontSize={14}>{formatTimer(timer)}</Typography>
+          </Box>
+        ): (
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 1,
+              backgroundColor: theme.palette.grey[200],
+            }}
+          >
+            <Icon icon="material-symbols:timer-outline" width={18} />
+            <Typography fontSize={14}>
+              Break Time : {formatTimer(breakTime)}
+            </Typography>
           </Box>
         )}
         <Box display="flex" gap={2} justifyContent="center">

@@ -13,7 +13,7 @@ const useInterviewAnswer = () => {
 
   async function fetchCandidateAnswer() {
     setIsLoading(true);
-    const res = await axiosUtils.get(`/answers/candidate-result/${userId}`);
+    const res = await axiosUtils.get(`/answers/candidate-result/${id}/${userId}`);
     setAnswerCandidate(res.data);
     setIsLoading(false);
   }
