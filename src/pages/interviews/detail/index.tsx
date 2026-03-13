@@ -11,17 +11,27 @@ import DetailInterviewLayout from './layout/DetailInterviewLayout';
 import {
   Button
 } from "@mui/material";
-
+import { ButtonComponent } from '@/components/ButtonComponent';
 import InterviewDetailModal from "./components/InterviewDetailModal";
+import { useNavigate } from 'react-router-dom';
+import ChartSummaryCard from "./components/ChartSummaryCard";
+import { buildRecommendationChart } from "./components/ChartSummaryCard/buildRecommandationChart";
+import DetailInterviewLoading from "./detailInterviewLoading";
+
 
 const InterviewDetailPage = () => {
   const theme = useTheme();
-  const { method, handleSortChange, detailInterview, candidateList } = useDetailInterview();
+  const { method, handleSortChange, detailInterview, candidateList, summaryRecommandation, isLoadingCandidateList } = useDetailInterview();
   const location = useLocation();
   const currentPath = location.pathname;
   const [openDetail, setOpenDetail] = useState(false);
   const handleOpenDetail = () => setOpenDetail(true);
   const handleCloseDetail = () => setOpenDetail(false);
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(`/interviews`);
+  };
 
   const tableHeader: TableHeader[] = [
     {
@@ -84,6 +94,19 @@ const InterviewDetailPage = () => {
     },
   };
 
+  const summaryData = buildRecommendationChart(
+    summaryRecommandation,
+    detailInterview?.purpose ?? "",
+  );
+
+  const totalResponse = summaryData.reduce(
+    (acc, item) => acc + item.value,
+    0
+  );
+
+  if (isLoadingCandidateList) {
+    return <DetailInterviewLoading />;
+  }
   return (
     <DetailInterviewLayout>
       <Box
@@ -97,9 +120,27 @@ const InterviewDetailPage = () => {
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography fontSize={18} fontWeight={600}>
-            Overall Analysis
-          </Typography>
+          <Box>
+            <ButtonComponent
+              variant="text"
+              sx={{
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                },
+                padding: 0,
+                fontSize: 14,
+                width: 'fit-content',
+                marginBottom: 2
+              }}
+              startIcon={<Icon icon="bx:left-arrow-alt" />}
+              onClick={handleBack}
+            >
+              Back to Interviews
+            </ButtonComponent>
+            <Typography fontSize={18} fontWeight={600}>
+              Overall Analysis
+            </Typography>
+          </Box>
 
           <Button
             variant="outlined"
@@ -129,7 +170,7 @@ const InterviewDetailPage = () => {
             tableData={candidateList as unknown as Record<string, string>[]}
             minWidth="900px"
             renderPagination={false}
-            maxHeight="30vh"
+            maxHeight="60vh"
             page={method.watch('page')}
             pageSize={method.watch('size')}
             onPageChange={page => method.setValue('page', page)}
@@ -246,60 +287,13 @@ const InterviewDetailPage = () => {
             />
           </Box>
 
-          <Box
-            sx={{
-              ...style.cardSummary,
-              alignItems: 'center',
-              gap: 1,
-            }}
-          >
-            <Box display="flex" gap={1} justifyContent="center">
-              <Icon icon="lucide:circle-user" width={25} height={25} />
-              <Typography fontWeight={600}>Candidate Status</Typography>
-              <Tooltip
-                title="Breakdown of the candidate selection status"
-                placement="top"
-              >
-                <Icon
-                  icon="material-symbols:info-outline"
-                  width={12}
-                  height={12}
-                  color={theme.palette.primary.main}
-                  style={{ cursor: 'pointer' }}
-                />
-              </Tooltip>
-            </Box>
-            <Typography fontSize={14}>Total Response: 1</Typography>
-            <PieChart
-              series={[
-                {
-                  data: [
-                    {
-                      id: 1,
-                      value: 1,
-                      label: `Selected (${1})`,
-                      color: theme.palette.success.light,
-                    },
-                    { id: 2, value: 0, label: `Potential (${0})` },
-                    {
-                      id: 3,
-                      value: 0,
-                      label: `Not Selected (${0})`,
-                      color: theme.palette.error.main,
-                    },
-                    {
-                      id: 4,
-                      value: 0,
-                      label: `No Status (${0})`,
-                      color: theme.palette.grey[400],
-                    },
-                  ],
-                },
-              ]}
-              width={150}
-              height={150}
-            />
-          </Box>
+          <ChartSummaryCard
+            title="Candidate Recommendation"
+            icon="lucide:circle-user"
+            tooltip="Breakdown of AI hiring recommendation results"
+            total={totalResponse}
+            data={summaryData}
+          />
         </Box>
       </Box>
       <InterviewDetailModal

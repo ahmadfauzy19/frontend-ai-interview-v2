@@ -34,3 +34,28 @@ export interface OverallScore {
   totalScore: number;
   finalRecommendation: string;
 }
+
+export const purpose = {
+  HIRING: 'HIRING',
+  INTERNAL_ASSESSMENT: 'INTERNAL_ASSESSMENT',
+} as const;
+
+export type Purpose = typeof purpose[keyof typeof purpose];
+
+export interface InternalAssessmentSummary {
+  readyForPromotion: number
+  meetsCurrentLevel: number
+  needsImprovement: number
+  significantImprovementRequired: number
+}
+
+export interface HiringSummary {
+  strongHire: number
+  hire: number
+  consider: number
+  reject: number
+}
+
+export type SummaryRecommendation =
+  | InternalAssessmentSummary
+  | HiringSummary
