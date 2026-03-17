@@ -165,7 +165,7 @@ const RecordInterviews = ({
 
         formData.append('video', videoFile);
       }
-      formData.append('breakTIme', breakTime.toString());
+      formData.append('breakTime', breakTime.toString());
       formData.append('answerTime', timer.toString());
 
       await axiosUtils.post(
