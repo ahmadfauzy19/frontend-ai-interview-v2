@@ -65,13 +65,22 @@ const InterviewDetailPage = () => {
       labelAlign: 'center',
     },
     {
-      key: 'finalRecommendation',
+      key: 'recommendation',
+      label: 'Recommendataion',
+      sx: { width: 'auto' },
+      labelAlign: 'center',
+      render: row => {
+        const r = row as unknown as OverallScore;
+        return <Typography fontSize={12}>{r.recommendation}</Typography>;
+      },
+    },{
+      key: 'summaryReason',
       label: 'Summary',
       sx: { width: 'auto' },
       labelAlign: 'center',
       render: row => {
         const r = row as unknown as OverallScore;
-        return <Typography fontSize={12}>{r.finalRecommendation}</Typography>;
+        return <Typography fontSize={12}>{r.summaryReason}</Typography>;
       },
     },
   ];

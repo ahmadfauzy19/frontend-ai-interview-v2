@@ -1,7 +1,8 @@
 export interface CandidateAnswer {
   name: string;
   totalScore: number | null;
-  finalRecommendation: string | null;
+  recommendation: string | null;
+  summaryReason: string | null;
   answers: Answer[];
 }
 
@@ -10,6 +11,8 @@ export interface Answer {
   questionText: string;
   answerTranscript: string;
   videoUrl: string;
-  score: number | null;
+  technicalFundamentalScore: number | null;
+  problemSolvingScore: number | null;
+  communicationScore: number | null;
   fileName: string;
 }

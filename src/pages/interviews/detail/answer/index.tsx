@@ -7,6 +7,7 @@ import {
   Skeleton,
   Typography,
   useTheme,
+  Chip,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import DetailInterviewLayout from '../layout/DetailInterviewLayout';
@@ -35,18 +36,6 @@ const InterviewAnswerPage = () => {
     };
   }
 
-  const style = {
-    cardContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 3,
-      backgroundColor: theme.palette.background.paper,
-      borderRadius: 3,
-      padding: 3,
-      boxShadow: '0px 2px 8px rgba(0,0,0,0.06)',
-    },
-  };
-
   const getScoreColor = (score?: number | null) => {
     if (!score) return theme.palette.grey[500];
 
@@ -57,35 +46,53 @@ const InterviewAnswerPage = () => {
     return theme.palette.error.main;
   };
 
+  const getRecommendationColor = (rec?: string | null) => {
+    if (!rec) return theme.palette.grey[500];
+
+    if (rec.toLowerCase() === 'hire') return theme.palette.success.main;
+    if (rec.toLowerCase() === 'consider') return theme.palette.warning.main;
+
+    return theme.palette.error.main;
+  };
+
+  const style = {
+    card: {
+      background: theme.palette.background.paper,
+      borderRadius: 3,
+      padding: 3,
+      boxShadow: '0px 2px 10px rgba(0,0,0,0.06)',
+    },
+  };
+
   return (
     <DetailInterviewLayout>
-      <Box
-        display="flex"
-        flexDirection="column"
-        gap={4}
-        maxHeight="100vh"
-        overflow="auto"
-      >
+      <Box display="flex" flexDirection="column" gap={4}>
+
         {/* HEADER */}
-        <Box sx={style.cardContainer}>
+        <Box sx={style.card}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
+
             <Box display="flex" alignItems="center" gap={2}>
               <Avatar
                 {...stringAvatar(answerCandidate?.name || '')}
-                sx={{ width: 48, height: 48 }}
+                sx={{
+                  width: 50,
+                  height: 50,
+                  fontWeight: 700,
+                }}
               />
 
               <Box>
                 {isLoading ? (
                   <Skeleton width={120} />
                 ) : (
-                  <Typography fontSize={16} fontWeight={600}>
+                  <Typography fontSize={18} fontWeight={700}>
                     {answerCandidate?.name}
                   </Typography>
                 )}
 
                 <Typography fontSize={13} color="text.secondary">
-                  Candidate Interview Result
+                  AI Interview Result
                 </Typography>
               </Box>
             </Box>
@@ -99,41 +106,46 @@ const InterviewAnswerPage = () => {
             </ButtonComponent>
           </Box>
 
-          <Divider />
+          <Divider sx={{ my: 2 }} />
 
           {/* SUMMARY */}
-          <Typography fontSize={18} fontWeight={600}>
+          <Typography fontSize={18} fontWeight={700} mb={2}>
             Interview Summary
           </Typography>
 
           <Box display="flex" gap={3} flexWrap="wrap">
+
+            {/* TOTAL SCORE */}
             <Box
               sx={{
                 background: theme.palette.primary.main,
                 color: '#fff',
-                borderRadius: 2,
-                padding: 2,
-                minWidth: 160,
+                borderRadius: 3,
+                padding: 3,
+                minWidth: 180,
               }}
             >
               <Typography fontSize={12}>Total Score</Typography>
 
               {isLoading ? (
-                <Skeleton width={40} />
+                <Skeleton width={50} />
               ) : (
-                <Typography fontSize={26} fontWeight={700}>
-                  {answerCandidate?.totalScore || 0}
+                <Typography fontSize={30} fontWeight={700}>
+                  {answerCandidate?.totalScore ?? 0}
                 </Typography>
               )}
             </Box>
 
+            {/* RECOMMENDATION */}
             <Box
               sx={{
-                background: theme.palette.success.main,
+                background: getRecommendationColor(
+                  answerCandidate?.recommendation
+                ),
                 color: '#fff',
-                borderRadius: 2,
-                padding: 2,
-                minWidth: 160,
+                borderRadius: 3,
+                padding: 3,
+                minWidth: 180,
               }}
             >
               <Typography fontSize={12}>Recommendation</Typography>
@@ -141,18 +153,31 @@ const InterviewAnswerPage = () => {
               {isLoading ? (
                 <Skeleton width={80} />
               ) : (
-                <Typography fontSize={18} fontWeight={700}>
-                  {answerCandidate?.finalRecommendation || '-'}
+                <Typography fontSize={20} fontWeight={700}>
+                  {answerCandidate?.recommendation || '-'}
                 </Typography>
               )}
             </Box>
           </Box>
+
+          {/* SUMMARY REASON */}
+          {!isLoading && answerCandidate?.summaryReason && (
+            <Box mt={3}>
+              <Typography fontWeight={600} mb={1}>
+                AI Analysis
+              </Typography>
+
+              <Typography color="text.secondary">
+                {answerCandidate.summaryReason}
+              </Typography>
+            </Box>
+          )}
         </Box>
 
-        {/* TRANSCRIPT */}
-        <Box sx={style.cardContainer}>
-          <Typography fontSize={18} fontWeight={600}>
-            Transcript
+        {/* ANSWERS */}
+        <Box sx={style.card}>
+          <Typography fontSize={18} fontWeight={700} mb={3}>
+            Candidate Answers
           </Typography>
 
           {isLoading && (
@@ -164,13 +189,16 @@ const InterviewAnswerPage = () => {
 
           {!isLoading &&
             answerCandidate?.answers.map((item, index) => (
-              <Box
-                key={item.questionId}
-                display="flex"
-                flexDirection="column"
-                gap={3}
-              >
-                <Box display="grid" gridTemplateColumns="420px 1fr" gap={3}>
+              <Box key={item.questionId} mb={4}>
+
+                <Box
+                  display="grid"
+                  gridTemplateColumns={{
+                    xs: '1fr',
+                    md: '420px 1fr',
+                  }}
+                  gap={3}
+                >
                   {/* VIDEO */}
                   <Box>
                     <video
@@ -193,44 +221,64 @@ const InterviewAnswerPage = () => {
                     </Box>
                   </Box>
 
-                  {/* DETAILS */}
+                  {/* CONTENT */}
                   <Box display="flex" flexDirection="column" gap={2}>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Typography fontWeight={600}>Score</Typography>
 
-                      <Box
+                    {/* SCORES */}
+                    <Box display="flex" gap={1} flexWrap="wrap">
+
+                      <Chip
+                        label={`Technical: ${item.technicalFundamentalScore}`}
                         sx={{
-                          background: getScoreColor(item.score),
+                          background: getScoreColor(
+                            item.technicalFundamentalScore
+                          ),
                           color: '#fff',
-                          px: 1.5,
-                          py: 0.5,
-                          borderRadius: 2,
-                          fontSize: 12,
-                          fontWeight: 700,
-                          minWidth: 36,
-                          textAlign: 'center',
+                          fontWeight: 600,
                         }}
-                      >
-                        {item.score || 0}
-                      </Box>
+                      />
+
+                      <Chip
+                        label={`Problem Solving: ${item.problemSolvingScore}`}
+                        sx={{
+                          background: getScoreColor(
+                            item.problemSolvingScore
+                          ),
+                          color: '#fff',
+                          fontWeight: 600,
+                        }}
+                      />
+
+                      <Chip
+                        label={`Communication: ${item.communicationScore}`}
+                        sx={{
+                          background: getScoreColor(
+                            item.communicationScore
+                          ),
+                          color: '#fff',
+                          fontWeight: 600,
+                        }}
+                      />
                     </Box>
 
+                    {/* QUESTION */}
                     <Box>
-                      <Typography fontWeight={600} fontSize={14}>
+                      <Typography fontWeight={700}>
                         Question {index + 1}
                       </Typography>
 
-                      <Typography fontSize={14} color="text.secondary">
+                      <Typography color="text.secondary">
                         {item.questionText}
                       </Typography>
                     </Box>
 
+                    {/* ANSWER */}
                     <Box>
-                      <Typography fontWeight={600} fontSize={14}>
+                      <Typography fontWeight={700}>
                         Candidate Answer
                       </Typography>
 
-                      <Typography fontSize={14}>
+                      <Typography color="text.secondary">
                         {item.answerTranscript}
                       </Typography>
                     </Box>
@@ -238,7 +286,7 @@ const InterviewAnswerPage = () => {
                 </Box>
 
                 {index !== answerCandidate.answers.length - 1 && (
-                  <Divider sx={{ borderColor: theme.palette.divider }} />
+                  <Divider sx={{ mt: 4 }} />
                 )}
               </Box>
             ))}

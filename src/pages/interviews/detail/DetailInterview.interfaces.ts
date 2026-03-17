@@ -32,7 +32,8 @@ export interface OverallScore {
   name: string;
   communicationScore: number;
   totalScore: number;
-  finalRecommendation: string;
+  recommendation: string;
+  summaryReason: string;
 }
 
 export const purpose = {
