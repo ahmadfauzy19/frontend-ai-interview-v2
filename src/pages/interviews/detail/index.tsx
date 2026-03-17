@@ -195,11 +195,80 @@ const InterviewDetailPage = () => {
             Lihat Detail
           </Button>
         </Box>
-        <Box display="flex" gap={0.5}>
-          <Typography fontSize={14}>Interview Description:</Typography>
-          <Typography fontSize={14} fontWeight={600}>
-            {detailInterview?.context}
-          </Typography>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(4, 1fr)',
+            },
+            gap: 2,
+            mt: 1,
+          }}
+        >
+          {[
+            {
+              label: 'Description',
+              value: detailInterview?.context,
+              icon: 'mdi:text-box-outline',
+            },
+            {
+              label: 'Role',
+              value: detailInterview?.roleTarget,
+              icon: 'mdi:account-badge-outline',
+            },
+            {
+              label: 'Level',
+              value: detailInterview?.levelTarget,
+              icon: 'mdi:chart-line',
+            },
+            {
+              label: 'Technology',
+              value: detailInterview?.technology,
+              icon: 'mdi:code-tags',
+            },
+          ].map((item, index) => (
+            <Box
+              key={index}
+              sx={{
+                p: 2,
+                borderRadius: 3,
+                background: `linear-gradient(135deg, ${theme.palette.primary.light}20, ${theme.palette.background.paper})`,
+                border: `1px solid ${theme.palette.divider}`,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: 3,
+                },
+              }}
+            >
+              <Box display="flex" alignItems="center" gap={1}>
+                <Icon
+                  icon={item.icon}
+                  width={18}
+                  height={18}
+                  color={theme.palette.primary.main}
+                />
+                <Typography fontSize={12} color="text.secondary">
+                  {item.label}
+                </Typography>
+              </Box>
+
+              <Typography
+                fontSize={14}
+                fontWeight={600}
+                sx={{
+                  wordBreak: 'break-word',
+                }}
+              >
+                {item.value || '-'}
+              </Typography>
+            </Box>
+          ))}
         </Box>
         <Box
           sx={{
