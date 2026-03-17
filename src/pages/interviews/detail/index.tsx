@@ -58,6 +58,27 @@ const InterviewDetailPage = () => {
       },
     },
     {
+      key: 'avgTechnicalFundamentalScore',
+      label: 'Technical Score (50%)',
+      sort: true,
+      sx: { width: '16%', textAlign: 'center' },
+      labelAlign: 'center',
+    },
+    {
+      key: 'avgProblemSolvingScore',
+      label: 'Problem Solving Score (30%)',
+      sort: true,
+      sx: { width: '40%', textAlign: 'center' },
+      labelAlign: 'center',
+    },
+    {
+      key: 'avgCommunicationScore',
+      label: 'communication score (20%)',
+      sort: true,
+      sx: { width: '16%', textAlign: 'center' },
+      labelAlign: 'center',
+    },
+    {
       key: 'totalScore',
       label: 'Total Score',
       sort: true,
@@ -67,22 +88,36 @@ const InterviewDetailPage = () => {
     {
       key: 'recommendation',
       label: 'Recommendataion',
-      sx: { width: 'auto' },
+      sx: { width: 'auto', textAlign: 'center' },
       labelAlign: 'center',
       render: row => {
         const r = row as unknown as OverallScore;
-        return <Typography fontSize={12}>{r.recommendation}</Typography>;
+        return <Typography fontSize={14}>{r.recommendation}</Typography>;
       },
     },{
       key: 'summaryReason',
       label: 'Summary',
-      sx: { width: 'auto' },
+      sx: {
+        minWidth: 300,
+        width: 400,
+        flexShrink: 0,
+      },
       labelAlign: 'center',
       render: row => {
         const r = row as unknown as OverallScore;
-        return <Typography fontSize={12}>{r.summaryReason}</Typography>;
+        return (
+          <Typography
+            fontSize={12}
+            sx={{
+              whiteSpace: 'normal',     
+              wordBreak: 'break-word', 
+            }}
+          >
+            {r.summaryReason}
+          </Typography>
+        );
       },
-    },
+    }
   ];
 
   const style = {
@@ -167,19 +202,17 @@ const InterviewDetailPage = () => {
           </Typography>
         </Box>
         <Box
-          display="flex"
-          flexDirection="column"
-          padding={2}
-          borderRadius={3}
-          bgcolor={theme.palette.background.paper}
-          minHeight={'30vh'}
+          sx={{
+            width: '100%',
+            overflowX: 'auto', 
+          }}
         >
           <TableComponent
             tableHeader={tableHeader}
             tableData={candidateList as unknown as Record<string, string>[]}
-            minWidth="900px"
-            renderPagination={false}
+            minWidth="1200px"   
             maxHeight="60vh"
+            renderPagination={false}
             page={method.watch('page')}
             pageSize={method.watch('size')}
             onPageChange={page => method.setValue('page', page)}
