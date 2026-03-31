@@ -2,10 +2,18 @@ import { Icon } from '@iconify/react';
 import { Link, Stack, Typography, useTheme } from '@mui/material';
 import { matchPath, Link as RouterLink, useLocation } from 'react-router-dom';
 import { SidebarMenu } from './Sidebar.const';
+import { useAuth } from '@/context/auth/AuthContext';
 
 const Sidebar = () => {
   const theme = useTheme();
   const { pathname } = useLocation();
+  const { userData } = useAuth();
+
+  const filteredMenu = SidebarMenu.filter((item) => {
+    if (item.hidden) return false;
+    if (!item.roles) return true;
+    return item.roles.includes(userData?.role);
+  });
 
   return (
     <Stack
@@ -15,8 +23,10 @@ const Sidebar = () => {
         height: 'calc(100vh - 75px)',
       }}
     >
-      {SidebarMenu.filter(item => !item.hidden).map((item, index) => {
+      {filteredMenu .filter(item => !item.hidden).map((item, index) => {
         const isActive = !!matchPath({ path: item.path, end: false }, pathname);
+        
+
 
         return (
           <Link

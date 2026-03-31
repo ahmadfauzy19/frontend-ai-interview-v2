@@ -3,4 +3,5 @@ export interface SidebarMenuInterface {
   path: string;
   icon: string;
   hidden: boolean;
+  roles?: string[]; 
 }

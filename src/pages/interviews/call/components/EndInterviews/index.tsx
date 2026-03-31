@@ -24,6 +24,7 @@ const EndInterviews = () => {
           gap: 2,
           width: { xs: '90%', sm: '40vw', xl: '20vw' },
           textAlign: 'center',
+          marginTop: 20,
         }}
       >
         <Stack alignItems="center" gap={3}>

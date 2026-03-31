@@ -1,5 +1,17 @@
 import { ButtonComponent } from '@/components/ButtonComponent';
-import { Box, Stack, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  Stack,
+  Typography,
+  useTheme,
+  Chip,
+  Divider,
+} from '@mui/material';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import WorkIcon from '@mui/icons-material/Work';
+import MemoryIcon from '@mui/icons-material/Memory';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+
 import { ERROR_MESSAGES } from 'react-record-webcam';
 import type {
   CameraState,
@@ -18,75 +30,122 @@ const IntroInterviews = ({
 }) => {
   const theme = useTheme();
 
+  const isBlocked =
+    permissionState?.errorCode === ERROR_MESSAGES.NO_USER_PERMISSION ||
+    permissionState?.errorCode === 'Permission denied';
+
   return (
     <Box
       display="flex"
       flexGrow={1}
-      flexDirection="column"
-      gap={3}
+      justifyContent="center"
       alignItems="center"
+      px={2}
+      marginTop={10}
     >
-      <Typography fontSize={18} fontWeight={700}>
-        {data?.name}
-      </Typography>
       <Box
         sx={{
-          backgroundColor: theme.palette.primary.light,
-          border: `1px solid ${theme.palette.primary.main}`,
-          borderRadius: 2,
-          padding: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          width: { xs: 'fit-content', sm: '40vw', xl: '20vw' },
+          width: { xs: '100%', sm: '420px' },
+          borderRadius: 4,
+          boxShadow: 4,
+          p: 4,
+          backgroundColor: 'white',
         }}
       >
-        <Box display="flex" gap={1} flexDirection="column" alignItems="center">
-          <Stack alignItems="center">
-            <Typography fontSize={14} fontWeight={600}>
-              Role
-            </Typography>
-            <Typography fontSize={14}>{data?.roleTarget}</Typography>
-          </Stack>
-          <Stack alignItems="center">
-            <Typography fontSize={14} fontWeight={600}>
-              Technology
-            </Typography>
-            <Typography fontSize={14}>{data?.technology}</Typography>
-          </Stack>
-        </Box>
-        <Typography fontSize={14} fontWeight={700}>
-          Ensure your volume is up and grant microphone access when prompted.
-          Additionally, please make sure you are in a quiet environment.
-        </Typography>
-        <Typography fontSize={14} fontWeight={700}>
-          Note: Tab switching will be recorded.
-        </Typography>
-        <Box display="flex" flexDirection="column" gap={1} alignItems="center">
-          <Typography fontSize={14}>
-            Camera status: {permissionState?.message}
+        {/* TITLE */}
+        <Stack spacing={1} alignItems="center" mb={2}>
+          <Typography fontSize={20} fontWeight={700}>
+            {data?.name}
           </Typography>
+          <Typography fontSize={13} color="text.secondary">
+            AI Interview Session
+          </Typography>
+        </Stack>
+
+        <Divider sx={{ mb: 2 }} />
+
+        {/* INFO */}
+        {/* <Stack spacing={2} mb={3}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <WorkIcon fontSize="small" color="primary" />
+            <Typography fontWeight={600}>Role:</Typography>
+            <Chip label={data?.roleTarget} size="small" />
+          </Stack>
+
+          <Stack direction="row" spacing={1} alignItems="center">
+            <MemoryIcon fontSize="small" color="primary" />
+            <Typography fontWeight={600}>Technology:</Typography>
+            <Chip label={data?.technology} size="small" />
+          </Stack>
+        </Stack> */}
+
+        {/* WARNING */}
+        <Box
+          sx={{
+            backgroundColor: '#FFF7E6',
+            border: '1px solid #FFD591',
+            borderRadius: 2,
+            p: 2,
+            mb: 3,
+          }}
+        >
+          <Stack direction="row" spacing={1} alignItems="flex-start">
+            <WarningAmberIcon color="warning" />
+            <Box>
+              <Typography fontSize={13} fontWeight={600}>
+                Please prepare before starting:
+              </Typography>
+              <Typography fontSize={13}>
+                • Ensure microphone is enabled  
+                • Stay in a quiet environment  
+                • Do not switch tabs (will be recorded)
+              </Typography>
+            </Box>
+          </Stack>
         </Box>
-        <Box display="flex" gap={1} justifyContent="center">
+
+        {/* CAMERA STATUS */}
+        <Stack spacing={1} alignItems="center" mb={3}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <VideocamIcon
+              color={isBlocked ? 'error' : 'success'}
+              fontSize="small"
+            />
+            <Typography fontSize={13}>
+              {permissionState?.message || 'Checking camera...'}
+            </Typography>
+          </Stack>
+        </Stack>
+
+        {/* ACTION BUTTON */}
+        <Stack spacing={1}>
           <ButtonComponent
             variant="contained"
+            fullWidth
+            size="large"
             onClick={() => setInterviewState('QUESTION')}
-            disabled={
-              permissionState?.errorCode ===
-                ERROR_MESSAGES.NO_USER_PERMISSION ||
-              permissionState?.errorCode === 'Permission denied'
-            }
+            disabled={isBlocked}
+            sx={{
+              fontWeight: 600,
+              py: 1.2,
+              borderRadius: 2,
+            }}
           >
-            Start Interview
+             Start Interview
           </ButtonComponent>
+
           <ButtonComponent
-            variant="contained"
+            variant="outlined"
+            fullWidth
+            size="medium"
             onClick={() => setInterviewState('END')}
-            sx={{ backgroundColor: 'white', color: 'black', boxShadow: 1 }}
+            sx={{
+              borderRadius: 2,
+            }}
           >
             Exit
           </ButtonComponent>
-        </Box>
+        </Stack>
       </Box>
     </Box>
   );
