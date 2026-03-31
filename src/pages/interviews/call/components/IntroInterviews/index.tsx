@@ -3,13 +3,9 @@ import {
   Box,
   Stack,
   Typography,
-  useTheme,
-  Chip,
   Divider,
 } from '@mui/material';
 import VideocamIcon from '@mui/icons-material/Videocam';
-import WorkIcon from '@mui/icons-material/Work';
-import MemoryIcon from '@mui/icons-material/Memory';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 import { ERROR_MESSAGES } from 'react-record-webcam';
@@ -28,7 +24,6 @@ const IntroInterviews = ({
   setInterviewState: (state: InterviewState) => void;
   permissionState?: CameraState;
 }) => {
-  const theme = useTheme();
 
   const isBlocked =
     permissionState?.errorCode === ERROR_MESSAGES.NO_USER_PERMISSION ||
@@ -63,21 +58,6 @@ const IntroInterviews = ({
         </Stack>
 
         <Divider sx={{ mb: 2 }} />
-
-        {/* INFO */}
-        {/* <Stack spacing={2} mb={3}>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <WorkIcon fontSize="small" color="primary" />
-            <Typography fontWeight={600}>Role:</Typography>
-            <Chip label={data?.roleTarget} size="small" />
-          </Stack>
-
-          <Stack direction="row" spacing={1} alignItems="center">
-            <MemoryIcon fontSize="small" color="primary" />
-            <Typography fontWeight={600}>Technology:</Typography>
-            <Chip label={data?.technology} size="small" />
-          </Stack>
-        </Stack> */}
 
         {/* WARNING */}
         <Box

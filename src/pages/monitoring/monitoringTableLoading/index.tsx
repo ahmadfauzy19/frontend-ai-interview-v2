@@ -28,7 +28,7 @@ const MonitoringTableLoading = () => {
           {/* HEADER */}
           <TableHead>
             <TableRow>
-              {columns.map((col, index) => (
+              {columns.map((_col, index) => (
                 <TableCell key={index}>
                   <Skeleton variant="text" width="60%" height={20} />
                 </TableCell>

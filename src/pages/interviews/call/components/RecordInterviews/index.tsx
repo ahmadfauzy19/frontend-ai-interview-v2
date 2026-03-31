@@ -3,7 +3,7 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { useSnackbar } from '@/context/snackbar/SnackbarContext';
 import axiosUtils from '@/utils/axiosUtils';
 import { Icon } from '@iconify/react';
-import { Box, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Typography} from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useRecordWebcam } from 'react-record-webcam';
 import type { InterviewState, Question } from '../../CallInterview.interfaces';
@@ -15,7 +15,6 @@ const RecordInterviews = ({
   questions: Question[];
   setInterviewState: (state: InterviewState) => void;
 }) => {
-  const theme = useTheme();
   const [allQuestion, setAllQuestion] = useState<Question[]>(questions);
   const [activeQuestion, setActiveQuestion] = useState(1);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(questions[0]);
