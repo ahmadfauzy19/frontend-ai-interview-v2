@@ -18,9 +18,7 @@ const RecordInterviews = ({
   const theme = useTheme();
   const [allQuestion, setAllQuestion] = useState<Question[]>(questions);
   const [activeQuestion, setActiveQuestion] = useState(1);
-  const [currentQuestion, setCurrentQuestion] = useState<Question>(
-    questions[0]
-  );
+  const [currentQuestion, setCurrentQuestion] = useState<Question>(questions[0]);
   const [recordId, setRecordId] = useState('');
   const { userData } = useAuth();
   const { showSnackbar } = useSnackbar();
@@ -39,12 +37,6 @@ const RecordInterviews = ({
     }, 1000);
   };
 
-  const resumeTimer = () => {
-    timerRef.current = setInterval(() => {
-      setTimer(prev => prev + 1);
-    }, 1000);
-  };
-
   const stopTimer = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -53,16 +45,13 @@ const RecordInterviews = ({
   };
 
   const formatTimer = (seconds: number) => {
-    const m = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, '0');
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
     const s = (seconds % 60).toString().padStart(2, '0');
     return `${m}m ${s}s`;
   };
 
   const startBreakTimer = () => {
     if (breakTimerRef.current) return;
-
     breakTimerRef.current = setInterval(() => {
       setBreakTime(prev => prev + 1);
     }, 1000);
@@ -87,13 +76,10 @@ const RecordInterviews = ({
     startRecording,
     stopRecording,
     clearAllRecordings,
-    pauseRecording,
-    resumeRecording,
   } = useRecordWebcam();
 
   const currentRecording = activeRecordings.find(r => r.id === recordId);
   const isRecording = currentRecording?.status === 'RECORDING';
-  const isPaused = currentRecording?.status === 'PAUSED';
   const isStopped = currentRecording?.status === 'STOPPED';
   const isLastQuestion = activeQuestion === questions.length;
 
@@ -103,8 +89,7 @@ const RecordInterviews = ({
 
   useEffect(() => {
     initRecording();
-    setTimer(0);
-    startBreakTimer(); 
+    startBreakTimer();
   }, []);
 
   const initRecording = async () => {
@@ -116,46 +101,21 @@ const RecordInterviews = ({
 
   const recordVideo = async () => {
     stopBreakTimer();
-    if (isPaused) {
-      resumeTimer();
-      await resumeRecording(recordId);
-    } else {
-      await startRecording(recordId);
-      startTimer();
-    }
-  };
-
-  const pauseRecordVideo = async () => {
-    await pauseRecording(recordId);
-    stopTimer();
-    startBreakTimer();
+    await startRecording(recordId);
+    startTimer();
   };
 
   const stopRecordVideo = async () => {
     await stopRecording(recordId);
     stopTimer();
-    stopBreakTimer(); 
-  };
-
-  const nextRecordVideo = async (index: number) => {
-    stopTimer();
-    setTimer(0);
-    resetBreakTimer();
-    startBreakTimer();
-    setActiveQuestion(index);
-    await clearAllRecordings();
-
-    const newRecording = await createRecording();
-    if (newRecording) {
-      setRecordId(newRecording.id);
-      await openCamera(newRecording.id);
-    }
+    stopBreakTimer();
   };
 
   const submitRecord = async (index: number, type: 'next' | 'finish') => {
     setIsLoading(true);
     try {
       const formData = new FormData();
+
       if (currentRecording?.blob) {
         const videoFile = new File(
           [currentRecording.blob],
@@ -165,6 +125,7 @@ const RecordInterviews = ({
 
         formData.append('video', videoFile);
       }
+
       formData.append('breakTime', breakTime.toString());
       formData.append('answerTime', timer.toString());
 
@@ -186,7 +147,6 @@ const RecordInterviews = ({
         await clearAllRecordings();
       } else {
         setActiveQuestion(index);
-
         await clearAllRecordings();
 
         const newRecording = await createRecording();
@@ -194,11 +154,12 @@ const RecordInterviews = ({
           setRecordId(newRecording.id);
           await openCamera(newRecording.id);
         }
+
         startBreakTimer();
       }
 
-      setIsLoading(false);
       setTimer(0);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
       showSnackbar('Failed to upload video', 'error');
@@ -207,210 +168,205 @@ const RecordInterviews = ({
   };
 
   return (
-    <Box display="flex" gap={5}>
+    <Box display="flex" height="100vh" bgcolor="#F4F6F8">
+      
+      {/* Sidebar */}
       <Box
         sx={{
-          width: '30%',
-          maxHeight: '100vh',
-          overflowY: 'auto',
-          borderRadius: 3,
+          width: 80,
+          backgroundColor: '#FFFFFF',
+          borderRight: '1px solid #E5E7EB',
+          boxShadow: '2px 0 10px rgba(0,0,0,0.03)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 3,
-          backgroundColor: '#fafafa',
-          padding: 3,
+          paddingY: 3,
+          gap: 2,
         }}
       >
-        <Typography fontSize={18} fontWeight={700}>
-          Questions
-        </Typography>
-        <Stack gap={1}>
-          {allQuestion.map((question, index) => {
-            const questionOrder = index + 1;
-            const isCurrentQuestion = questionOrder === activeQuestion;
-            const isDone = question.isDone;
+        {allQuestion.map((question, index) => {
+          const questionOrder = index + 1;
+          const isActive = questionOrder === activeQuestion;
+          const isDone = question.isDone;
 
-            const getBorderColor = () => {
-              if (isDone) return `1px solid ${theme.palette.success.main}`;
-              if (isCurrentQuestion)
-                return `1px solid ${theme.palette.primary.main}`;
-              return 'none';
-            };
+          return (
+            <Box
+              key={question.id}
+              sx={{
+                width: 42,
+                height: 42,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 600,
+                backgroundColor: isDone
+                  ? '#22C55E'
+                  : isActive
+                    ? '#1976D2'
+                    : '#E5E7EB',
+                color: isDone || isActive ? 'white' : '#555',
+                boxShadow: isActive
+                  ? '0 4px 12px rgba(25,118,210,0.4)'
+                  : 'none',
+                transition: '0.2s',
+              }}
+            >
+              {isDone ? (
+                <Icon icon="mdi:check" width={18} />
+              ) : (
+                questionOrder
+              )}
+            </Box>
+          );
+        })}
+      </Box>
 
-            return (
-              <Box
-                key={question.id}
-                component="div"
+      {/* Main */}
+      <Box flex={1} display="flex" flexDirection="column" paddingX={5} gap={1} paddingY={3}>
+        
+        {/* Header */}
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography fontWeight={600} fontSize={16} color="#1E293B">
+            Question {activeQuestion} / {questions.length}
+          </Typography>
+
+          <Box display="flex" gap={2} alignItems="center">
+            <Typography fontSize={13} color="#64748B">
+              {isRecording
+                ? `● Recording ${formatTimer(timer)}`
+                : `Break ${formatTimer(breakTime)}`}
+            </Typography>
+
+            {!isRecording && !isStopped && (
+              <ButtonComponent
+                onClick={recordVideo}
                 sx={{
-                  backgroundColor: 'white',
-                  border: getBorderColor(),
+                  color: 'white',
                   borderRadius: 2,
-                  paddingY: 1.5,
+                  textTransform: 'none',
+                  fontWeight: 500,
                   paddingX: 3,
-                  display: 'flex',
-                  gap: 1,
-                  cursor:
-                    isCurrentQuestion || isDone ? 'not-allowed' : 'pointer',
-                }}
-                onClick={() => {
-                  if (!isCurrentQuestion && !isDone)
-                    return nextRecordVideo(questionOrder);
+                  backgroundColor: '#1976D2',
+                  '&:hover': {
+                    backgroundColor: '#1565C0',
+                  },
                 }}
               >
-                <Typography
-                  fontSize={14}
-                  fontWeight={600}
-                  color={theme.palette.primary.main}
-                >
-                  {questionOrder}.
-                </Typography>
-                <Typography
-                  fontSize={14}
-                  color={
-                    isCurrentQuestion ? 'black' : theme.palette.text.secondary
-                  }
-                >
-                  {question.questionText}
-                </Typography>
-                {isDone && (
-                  <Box
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <Icon
-                      icon="material-symbols:check-circle"
-                      color={theme.palette.success.main}
-                      width={22}
-                      style={{ marginLeft: 'auto', flexShrink: 0 }}
-                    />
-                  </Box>
-                )}
-              </Box>
-            );
-          })}
-        </Stack>
-      </Box>
-      <Box
-        paddingY={3}
-        display="flex"
-        flexDirection="column"
-        gap={3}
-        width="70%"
-      >
-        <Typography textAlign="center">
-          {currentQuestion?.questionText}
-        </Typography>
-        <Box borderRadius={4} overflow="hidden">
-          {activeRecordings.map(recording => (
-            <Box width="100%" key={recording.id}>
+                Start
+              </ButtonComponent>
+            )}
+
+            {isRecording && (
+              <ButtonComponent
+                onClick={stopRecordVideo}
+                sx={{
+                  color: 'white',
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  paddingX: 3,
+                  backgroundColor: '#EF4444',
+                  '&:hover': {
+                    backgroundColor: '#DC2626',
+                  },
+                }}
+              >
+                Stop
+              </ButtonComponent>
+            )}
+
+            {!isLastQuestion && isStopped && (
+              <ButtonComponent
+                onClick={() => submitRecord(activeQuestion + 1, 'next')}
+                loading={isLoading}
+                sx={{
+                  color: 'white',
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  paddingX: 3,
+                  backgroundColor: '#1976D2',
+                  '&:hover': {
+                    backgroundColor: '#1565C0',
+                  },
+                }}
+              >
+                Next
+              </ButtonComponent>
+            )}
+
+            {isLastQuestion && isStopped && (
+              <ButtonComponent
+                onClick={() => submitRecord(1, 'finish')}
+                loading={isLoading}
+                sx={{
+                  color: 'white',
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  paddingX: 3,
+                  backgroundColor: '#1976D2',
+                  '&:hover': {
+                    backgroundColor: '#1565C0',
+                  },
+                }}
+              >
+                Finish
+              </ButtonComponent>
+            )}
+          </Box>
+        </Box>
+
+        {/* Question / Info */}
+        <Box minHeight={60} display="flex" justifyContent="center" alignItems="center">
+          {isRecording ? (
+            <Typography textAlign="center" fontWeight={600} fontSize={18}>
+              {currentQuestion?.questionText}
+            </Typography>
+          ) : (
+            <Box
+              sx={{
+                padding: '10px 16px',
+                borderRadius: 2,
+                backgroundColor: '#E3F2FD',
+                border: '1px solid #90CAF9',
+              }}
+            >
+              <Typography textAlign="center" fontSize={14} color="#64748B">
+                Pertanyaan akan muncul setelah Anda menekan tombol <b>Start</b>
+              </Typography>
+            </Box>
+          )}
+        </Box>
+
+        {/* Video */}
+        <Box flex={1} display="flex" justifyContent="center" alignItems="center">
+          <Box
+            sx={{
+              width: '100%',
+              maxWidth: '1000px',
+              aspectRatio: '16/9',
+              borderRadius: 4,
+              overflow: 'hidden',
+              backgroundColor: 'black',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+            }}
+          >
+            {activeRecordings.map(recording => (
               <video
+                key={recording.id}
                 ref={recording.webcamRef}
                 autoPlay
                 muted
-                width="100%"
-                height="auto"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
               />
-            </Box>
-          ))}
-        </Box>
-        {isRecording ? (
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 1,
-              backgroundColor: theme.palette.primary.light,
-            }}
-          >
-            <Box
-              sx={{
-                backgroundColor: theme.palette.error.main,
-                width: 10,
-                height: 10,
-                borderRadius: 50,
-              }}
-            />
-            <Typography fontSize={14}>{formatTimer(timer)}</Typography>
+            ))}
           </Box>
-        ): (
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 1,
-              backgroundColor: theme.palette.grey[200],
-            }}
-          >
-            <Icon icon="material-symbols:timer-outline" width={18} />
-            <Typography fontSize={14}>
-              Break Time : {formatTimer(breakTime)}
-            </Typography>
-          </Box>
-        )}
-        <Box display="flex" gap={2} justifyContent="center">
-          {(!isRecording || isPaused) && (
-            <ButtonComponent
-              variant="contained"
-              onClick={recordVideo}
-              disabled={isLoading}
-              startIcon={<Icon icon="material-symbols:play-arrow-rounded" />}
-            >
-              {isPaused
-                ? 'Resume Record'
-                : isStopped
-                  ? 'Retake Record'
-                  : 'Start Record'}
-            </ButtonComponent>
-          )}
-          {isRecording && (
-            <ButtonComponent
-              variant="contained"
-              onClick={pauseRecordVideo}
-              disabled={isLoading}
-              startIcon={<Icon icon="material-symbols:pause" />}
-              color="warning"
-            >
-              Pause Record
-            </ButtonComponent>
-          )}
-          {isRecording && (
-            <ButtonComponent
-              variant="contained"
-              onClick={stopRecordVideo}
-              disabled={isLoading}
-              startIcon={<Icon icon="material-symbols:stop-rounded" />}
-              color="error"
-            >
-              Stop Record
-            </ButtonComponent>
-          )}
-          {!isLastQuestion && isStopped && (
-            <ButtonComponent
-              variant="contained"
-              onClick={() => submitRecord(activeQuestion + 1, 'next')}
-              loading={isLoading}
-              startIcon={<Icon icon="material-symbols:send" />}
-              color="success"
-            >
-              Submit & Next
-            </ButtonComponent>
-          )}
-          {isLastQuestion && isStopped && (
-            <ButtonComponent
-              variant="contained"
-              onClick={() => submitRecord(1, 'finish')}
-              loading={isLoading}
-              startIcon={<Icon icon="material-symbols:exit-to-app" />}
-            >
-              Submit & Finish Session
-            </ButtonComponent>
-          )}
         </Box>
       </Box>
     </Box>

@@ -35,12 +35,12 @@ const CallInterviewPage = () => {
   return (
     <Box
       minHeight="100vh"
-      padding={3}
+      // padding={3}
       display="flex"
       flexDirection="column"
       boxSizing="border-box"
     >
-      <Box border="2px solid" borderRadius={3} padding={2} flexGrow={1}>
+      <Box borderRadius={3} flexGrow={1}>
         {isLoading && (
           <Box
             display="flex"

@@ -25,4 +25,11 @@ export const SidebarMenu: SidebarMenuInterface[] = [
     icon: '',
     hidden: true,
   },
+  {
+    title: 'Monitoring',
+    path: '/monitoring',
+    icon: 'mdi:chart-areaspline',
+    hidden: false,
+    roles: ['ADMIN', 'INTERVIEWER'],
+  }
 ];

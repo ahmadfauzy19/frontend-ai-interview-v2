@@ -5,12 +5,15 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Select,
+  MenuItem,
 } from '@mui/material';
 
 const PaginationComponent: React.FC<PaginationComponentProps> = ({
   page = 1,
   rowsPerPage = 10,
   onPageChange,
+  onRowsPerPageChange,
   totalData = 1,
 }) => {
   const theme = useTheme();
@@ -21,7 +24,9 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
     totalData < rowsPerPage
       ? totalData
       : Math.min(page * rowsPerPage, totalData);
+
   const totalPage = Math.ceil(totalData / rowsPerPage);
+
   const handleChangePage = (
     _event: React.ChangeEvent<unknown>,
     newPage: number
@@ -42,10 +47,38 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
         gap: isMobile ? 2 : 0,
       }}
     >
-      <Typography color={theme.palette.text.primary}>
-        Show: {start}-{end} of {totalData}
-      </Typography>
+      {/* LEFT SIDE */}
+      <Box display="flex" alignItems="center" gap={2}>
+        <Typography color={theme.palette.text.primary}>
+          Show: {start}-{end} of {totalData}
+        </Typography>
 
+        {/* 🔥 ROWS PER PAGE */}
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography fontSize={14}>Rows:</Typography>
+          <Select
+            size="small"
+            value={rowsPerPage}
+            onChange={(e) => {
+              onRowsPerPageChange?.(Number(e.target.value));
+              onPageChange(1); // reset page
+            }}
+            sx={{
+              height: 32,
+              background: '#fff',
+              borderRadius: 1,
+            }}
+          >
+            {[5, 10, 20, 30, 50].map((opt) => (
+              <MenuItem key={opt} value={opt}>
+                {opt}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+      </Box>
+
+      {/* RIGHT SIDE */}
       <Pagination
         count={totalPage}
         page={page}

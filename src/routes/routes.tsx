@@ -21,6 +21,8 @@ const InterviewAnswerPage = React.lazy(
   () => import('@/pages/interviews/detail/answer')
 );
 
+const MonitoringPage = React.lazy(() => import('@/pages/monitoring'));
+
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
 
@@ -49,6 +51,9 @@ const AppRoutes = () => {
             path="/interviews/:id/answer/:userId"
             element={<InterviewAnswerPage />}
           />
+          <Route element={<MainLayout />}>
+            <Route path="/monitoring" element={<MonitoringPage />} />
+          </Route>
         {/* </Route> */}
       </Route>
       <Route element={ <ProtectedRoute role={"CANDIDATE"}/> }>
