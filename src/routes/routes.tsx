@@ -42,6 +42,7 @@ const AppRoutes = () => {
         <Route element={<MainLayout />}>
           <Route path="/interviews" element={<InterviewPage />} />
           <Route path="/interviews/:id/edit" element={<EditInterviewPage />} />
+          <Route path="/monitoring" element={<MonitoringPage />} />
         </Route>
       </Route>
       <Route element={ <ProtectedRoute role={["ADMIN","INTERVIEWER"]}/> }>
@@ -51,9 +52,6 @@ const AppRoutes = () => {
             path="/interviews/:id/answer/:userId"
             element={<InterviewAnswerPage />}
           />
-          <Route element={<MainLayout />}>
-            <Route path="/monitoring" element={<MonitoringPage />} />
-          </Route>
         {/* </Route> */}
       </Route>
       <Route element={ <ProtectedRoute role={"CANDIDATE"}/> }>
