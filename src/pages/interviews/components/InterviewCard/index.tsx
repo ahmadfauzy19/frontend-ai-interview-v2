@@ -1,9 +1,10 @@
 import type { Interviews } from '@/pages/interviews/Interviews.interfaces';
 import { Icon } from '@iconify/react';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useTheme, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ButtonComponent } from '../../../../components/ButtonComponent';
 import CopyToClipboardButton from '../CopyToClipboardButton';
+import DeleteInterviewButton from '../DeleteButton';
 
 const InterviewCard = ({ data, role }: { data: Interviews; role: string }) => {
   const theme = useTheme();
@@ -37,9 +38,19 @@ const InterviewCard = ({ data, role }: { data: Interviews; role: string }) => {
           top: 8,
           right: 8,
           zIndex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
         }}
       >
         <CopyToClipboardButton textToCopy={`${currentUrl}/call/${data.id}`} />
+
+        {(role === 'ADMIN' || role === 'INTERVIEWER') && (
+          <DeleteInterviewButton
+            interviewId={data.id}
+            onSuccess={() => window.location.reload()}
+          />
+        )}
       </Box>
       <Box
         sx={{
