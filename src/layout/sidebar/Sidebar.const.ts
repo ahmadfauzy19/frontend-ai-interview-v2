@@ -30,6 +30,6 @@ export const SidebarMenu: SidebarMenuInterface[] = [
     path: '/monitoring',
     icon: 'mdi:chart-areaspline',
     hidden: false,
-    roles: ['ADMIN', 'INTERVIEWER'],
+    roles: ['ADMIN', 'INTERVIEWER', 'CANDIDATE'],
   }
 ];

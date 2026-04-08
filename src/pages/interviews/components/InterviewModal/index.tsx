@@ -33,9 +33,11 @@ const InterviewModal = ({
       title="Create an Interview"
       contentProps={
         <form onSubmit={method.handleSubmit(onSubmit)}>
-          <Stack gap={2} width={{ xs: '80vw', md: 'auto' }}>
-            <Grid container spacing={2}>
-              <Grid size={6}>
+          <Stack spacing={4} width={{ xs: '90vw', md: 800 }}>
+            <Grid container spacing={4}>
+              
+              {/* Interview Name */}
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextfieldComponent
                   control={method.control}
                   name="name"
@@ -45,29 +47,9 @@ const InterviewModal = ({
                   fullWidth
                 />
               </Grid>
-              <Grid size={6}>
-                <TextfieldComponent
-                  control={method.control}
-                  name="context"
-                  label="Context"
-                  placeholder="Context of the Interview"
-                  required
-                  fullWidth
-                />
-              </Grid>
-              <Grid size={12}>
-                <TextfieldComponent
-                  control={method.control}
-                  name="objective"
-                  label="Objective"
-                  placeholder="Objective of the Interview"
-                  required
-                  fullWidth
-                  multiline
-                  rows={4}
-                />
-              </Grid>
-              <Grid size={6}>
+
+              {/* Purpose */}
+              <Grid size={{ xs: 12, md: 6 }}>
                 <AutocompleteComponent
                   control={method.control}
                   name="purpose"
@@ -78,7 +60,39 @@ const InterviewModal = ({
                   options={purposeOptions}
                 />
               </Grid>
-              <Grid size={6}>
+
+              {/* Context */}
+              <Grid size={{ xs: 12, }}>
+                <TextfieldComponent
+                  control={method.control}
+                  name="context"
+                  label="Context"
+                  placeholder="Context of the Interview"
+                  required
+                  fullWidth
+                  multiline
+                  minRows={4}
+                  maxRows={10}
+                />
+              </Grid>
+
+              {/* Objective */}
+              <Grid size={{ xs: 12 }}>
+                <TextfieldComponent
+                  control={method.control}
+                  name="objective"
+                  label="Objective"
+                  placeholder="Objective of the Interview"
+                  required
+                  fullWidth
+                  multiline
+                  minRows={4}
+                  maxRows={10}
+                />
+              </Grid>
+
+              {/* Role & Level */}
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextfieldComponent
                   control={method.control}
                   name="roleTarget"
@@ -88,7 +102,8 @@ const InterviewModal = ({
                   fullWidth
                 />
               </Grid>
-              <Grid size={6}>
+
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextfieldComponent
                   control={method.control}
                   name="levelTarget"
@@ -98,40 +113,46 @@ const InterviewModal = ({
                   fullWidth
                 />
               </Grid>
-              <Grid size={6}>
+
+              {/* Number & Technology */}
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextfieldComponent
                   control={method.control}
                   name="number"
-                  label="Number of Question"
+                  label="Number of Questions"
                   placeholder="1"
                   required
                   fullWidth
                   format="number"
                 />
               </Grid>
-              <Grid size={12}>
+
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextfieldComponent
                   control={method.control}
                   name="technology"
                   label="Technology"
-                  placeholder="Spring Boot, React Js, etc"
+                  placeholder="Spring Boot, React JS, etc"
                   required
                   fullWidth
                 />
               </Grid>
-              <Grid size={12}>
-                <Box display="flex" gap={3} justifyContent="center">
+
+              {/* Button */}
+              <Grid size={{ xs: 12 }} display="flex" justifyContent="center">
+                <Box display="flex" justifyContent="center" mt={1}>
                   <ButtonComponent
                     variant="contained"
-                    sx={{ borderRadius: 2, paddingX: 4 }}
+                    sx={{ borderRadius: 2, px: 5, py: 1.2 }}
                     type="submit"
                     loading={isLoading}
                     startIcon={<Icon icon="material-symbols:save" />}
                   >
-                    Save
+                    Save Interview
                   </ButtonComponent>
                 </Box>
               </Grid>
+
             </Grid>
           </Stack>
         </form>

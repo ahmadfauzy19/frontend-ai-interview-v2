@@ -3,7 +3,7 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { useSnackbar } from '@/context/snackbar/SnackbarContext';
 import axiosUtils from '@/utils/axiosUtils';
 import { Icon } from '@iconify/react';
-import { Box, Typography} from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useRecordWebcam } from 'react-record-webcam';
 import type { InterviewState, Question } from '../../CallInterview.interfaces';
@@ -29,6 +29,55 @@ const RecordInterviews = ({
   const [breakTime, setBreakTime] = useState(0);
   const breakTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const {
+    createRecording,
+    activeRecordings,
+    openCamera,
+    startRecording,
+    stopRecording,
+    clearAllRecordings,
+  } = useRecordWebcam();
+
+  const currentRecording = activeRecordings.find(r => r.id === recordId);
+  const isRecording = currentRecording?.status === 'RECORDING';
+  const isStopped = currentRecording?.status === 'STOPPED';
+  const isLastQuestion = activeQuestion === questions.length;
+
+  // =========================
+  // 🧠 UTIL FUNCTIONS
+  // =========================
+
+  const stopMediaStream = (recording: any) => {
+    try {
+      const stream = recording?.webcamRef?.current?.srcObject;
+      if (stream instanceof MediaStream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+
+      if (recording?.webcamRef?.current) {
+        recording.webcamRef.current.srcObject = null;
+      }
+    } catch (err) {
+      console.warn('Failed stopping media stream', err);
+    }
+  };
+
+  const uploadWithRetry = async (
+    url: string,
+    formData: FormData,
+    retries = 2
+  ): Promise<any> => {
+    try {
+      return await axiosUtils.post(url, formData);
+    } catch (err) {
+      if (retries > 0) {
+        await new Promise(r => setTimeout(r, 1000));
+        return uploadWithRetry(url, formData, retries - 1);
+      }
+      throw err;
+    }
+  };
+
   const startTimer = () => {
     setTimer(0);
     timerRef.current = setInterval(() => {
@@ -41,12 +90,6 @@ const RecordInterviews = ({
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-  };
-
-  const formatTimer = (seconds: number) => {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${m}m ${s}s`;
   };
 
   const startBreakTimer = () => {
@@ -68,19 +111,15 @@ const RecordInterviews = ({
     setBreakTime(0);
   };
 
-  const {
-    createRecording,
-    activeRecordings,
-    openCamera,
-    startRecording,
-    stopRecording,
-    clearAllRecordings,
-  } = useRecordWebcam();
+  const formatTimer = (seconds: number) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}m ${s}s`;
+  };
 
-  const currentRecording = activeRecordings.find(r => r.id === recordId);
-  const isRecording = currentRecording?.status === 'RECORDING';
-  const isStopped = currentRecording?.status === 'STOPPED';
-  const isLastQuestion = activeQuestion === questions.length;
+  // =========================
+  // 🚀 INIT
+  // =========================
 
   useEffect(() => {
     setCurrentQuestion(questions[activeQuestion - 1]);
@@ -89,6 +128,12 @@ const RecordInterviews = ({
   useEffect(() => {
     initRecording();
     startBreakTimer();
+
+    return () => {
+      stopTimer();
+      stopBreakTimer();
+      if (currentRecording) stopMediaStream(currentRecording);
+    };
   }, []);
 
   const initRecording = async () => {
@@ -97,6 +142,10 @@ const RecordInterviews = ({
     setRecordId(recording.id);
     await openCamera(recording.id);
   };
+
+  // =========================
+  // 🎥 RECORD CONTROL
+  // =========================
 
   const recordVideo = async () => {
     stopBreakTimer();
@@ -110,25 +159,40 @@ const RecordInterviews = ({
     stopBreakTimer();
   };
 
+  // =========================
+  // 🚀 SUBMIT RECORD (FINAL FIX)
+  // =========================
+
   const submitRecord = async (index: number, type: 'next' | 'finish') => {
+    if (!currentRecording?.blob) {
+      showSnackbar('Recording tidak ditemukan', 'error');
+      return;
+    }
+
     setIsLoading(true);
+    const blobBackup = currentRecording.blob;
+
     try {
-      const formData = new FormData();
+      stopMediaStream(currentRecording);
 
-      if (currentRecording?.blob) {
-        const videoFile = new File(
-          [currentRecording.blob],
-          `${currentQuestion.questionText.replace(/\s+/g, '_')}-${userData.userId}-${Date.now()}.mp4`,
-          { type: 'video/webm' }
-        );
+      const videoFile = new File(
+        [blobBackup],
+        `${currentQuestion.questionText.replace(/\s+/g, '_')}-${userData.userId}-${Date.now()}.webm`,
+        { type: 'video/webm' }
+      );
 
-        formData.append('video', videoFile);
+      if (videoFile.size > 10 * 1024 * 1024) {
+        showSnackbar('Video maksimal 10MB', 'error');
+        setIsLoading(false);
+        return;
       }
 
+      const formData = new FormData();
+      formData.append('video', videoFile);
       formData.append('breakTime', breakTime.toString());
       formData.append('answerTime', timer.toString());
 
-      await axiosUtils.post(
+      await uploadWithRetry(
         `/answers/upload?questionId=${currentQuestion.id}&userId=${userData.userId}`,
         formData
       );
@@ -140,28 +204,46 @@ const RecordInterviews = ({
       );
 
       resetBreakTimer();
+      setTimer(0);
+
+      await clearAllRecordings();
+      await new Promise(res => setTimeout(res, 300));
 
       if (type === 'finish') {
         setInterviewState('END');
-        await clearAllRecordings();
-      } else {
-        setActiveQuestion(index);
-        await clearAllRecordings();
-
-        const newRecording = await createRecording();
-        if (newRecording) {
-          setRecordId(newRecording.id);
-          await openCamera(newRecording.id);
-        }
-
-        startBreakTimer();
+        return;
       }
 
-      setTimer(0);
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-      showSnackbar('Failed to upload video', 'error');
+      setActiveQuestion(index);
+
+      const newRecording = await createRecording();
+      if (newRecording) {
+        setRecordId(newRecording.id);
+        await openCamera(newRecording.id);
+      }
+
+      startBreakTimer();
+
+    } catch (error: any) {
+      console.error(error);
+
+      let errorMessage = 'Upload gagal, coba lagi';
+
+      if (error.response) {
+        errorMessage =
+          error.response.data?.message ||
+          error.response.data?.error ||
+          JSON.stringify(error.response.data);
+      } else if (error.request) {
+        errorMessage = 'Server tidak merespon';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      showSnackbar(errorMessage, 'error');
+      return; // penting: jangan clear biar bisa retry
+
+    } finally {
       setIsLoading(false);
     }
   };

@@ -74,9 +74,8 @@ const tableHeader: TableHeader<MonitoringHistory>[] = [
         color={row.messageError ? 'error' : 'text.secondary'}
         sx={{
           maxWidth: 250,
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
+          whiteSpace: 'normal',
+          wordBreak: 'break-word',
         }}
       >
         {row.messageError ?? '-'}

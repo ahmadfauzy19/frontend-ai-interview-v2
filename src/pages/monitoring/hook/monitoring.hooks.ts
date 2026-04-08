@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axiosUtils from '@/utils/axiosUtils';
+import { useAuth } from '@/context/auth/AuthContext';
 
 export interface MonitoringHistory {
   id: string;
@@ -29,22 +30,32 @@ export const useMonitoring = () => {
   const [direction, setDirection] = useState<
     ('asc' | 'desc')[]
     >();
-
+  
+  const { userData } = useAuth();
+  const userId = userData?.userId;
+  
   const fetchMonitoring = async () => {
     try {
       setLoading(true);
 
+      const params: any = {
+        page: page - 1,
+        size: rowsPerPage,
+        search: search || undefined,
+        sortBy,
+        direction,
+      };
+
+      if (
+        userData?.role !== 'ADMIN' &&
+        userData?.role !== 'INTERVIEWER'
+      ) {
+        params.userId = userId;
+      }
+
       const response = await axiosUtils.get<MonitoringResponse>(
         'monitoring',
-        {
-          params: {
-            page: page - 1,
-            size: rowsPerPage,
-            search,
-            sortBy: sortBy ? [sortBy] : undefined,
-            direction: direction ? [direction] : undefined,
-          },
-        }
+        { params }
       );
 
       setData(response.data.content);
@@ -57,8 +68,8 @@ export const useMonitoring = () => {
   };
 
     useEffect(() => {
-        fetchMonitoring();
-    }, [page, rowsPerPage, search, sortBy, direction]);
+      if (userData) fetchMonitoring();
+    }, [page, rowsPerPage, search, sortBy, direction, userData]);
 
   return {
     data,
