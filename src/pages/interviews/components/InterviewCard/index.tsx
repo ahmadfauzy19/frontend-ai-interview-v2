@@ -1,6 +1,6 @@
 import type { Interviews } from '@/pages/interviews/Interviews.interfaces';
 import { Icon } from '@iconify/react';
-import { Box, Typography, useTheme, IconButton } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ButtonComponent } from '../../../../components/ButtonComponent';
 import CopyToClipboardButton from '../CopyToClipboardButton';
