@@ -181,7 +181,7 @@ const RecordInterviews = ({
         { type: 'video/webm' }
       );
 
-      if (videoFile.size > 10 * 1024 * 1024) {
+      if (videoFile.size > 200 * 1024 * 1024) {
         showSnackbar('Video maksimal 10MB', 'error');
         setIsLoading(false);
         return;
