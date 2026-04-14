@@ -29,6 +29,14 @@ const RecordInterviews = ({
   const [breakTime, setBreakTime] = useState(0);
   const breakTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const [failedUpload, setFailedUpload] = useState<{
+        blob: Blob;
+        questionId: string;
+        fileName: string;
+      } | null>(null);
+
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const {
     createRecording,
     activeRecordings,
@@ -68,14 +76,29 @@ const RecordInterviews = ({
     retries = 2
   ): Promise<any> => {
     try {
-      return await axiosUtils.post(url, formData);
-    } catch (err) {
+      abortControllerRef.current = new AbortController();
+
+      return await axiosUtils.post(url, formData, {
+        signal: abortControllerRef.current.signal,
+      });
+
+    } catch (err: any) {
+      if (err.name === 'CanceledError') {
+        throw err;
+      }
+
       if (retries > 0) {
         await new Promise(r => setTimeout(r, 1000));
         return uploadWithRetry(url, formData, retries - 1);
       }
+
       throw err;
     }
+  };
+
+  const cancelUpload = () => {
+    abortControllerRef.current?.abort();
+    showSnackbar('Upload dibatalkan', 'info');
   };
 
   const startTimer = () => {
@@ -182,7 +205,7 @@ const RecordInterviews = ({
       );
 
       if (videoFile.size > 200 * 1024 * 1024) {
-        showSnackbar('Video maksimal 10MB', 'error');
+        showSnackbar('Video maksimal 200MB', 'error');
         setIsLoading(false);
         return;
       }
@@ -226,6 +249,16 @@ const RecordInterviews = ({
 
     } catch (error: any) {
       console.error(error);
+      if (error.name === 'CanceledError') {
+        showSnackbar('Upload dibatalkan user', 'info');
+        return;
+      }
+
+      setFailedUpload({
+        blob: blobBackup,
+        questionId: currentQuestion.id,
+        fileName: `${currentQuestion.questionText.replace(/\s+/g, '_')}-${userData.userId}-${Date.now()}.webm`
+      });
 
       let errorMessage = 'Upload gagal, coba lagi';
 
@@ -243,6 +276,40 @@ const RecordInterviews = ({
       showSnackbar(errorMessage, 'error');
       return; // penting: jangan clear biar bisa retry
 
+    } finally {
+      setIsLoading(false);
+      abortControllerRef.current = null;
+    }
+  };
+
+  const resendUpload = async () => {
+    if (!failedUpload) return;
+
+    setIsLoading(true);
+
+    try {
+      const videoFile = new File(
+        [failedUpload.blob],
+        failedUpload.fileName,
+        { type: 'video/webm' }
+      );
+
+      const formData = new FormData();
+      formData.append('video', videoFile);
+      formData.append('breakTime', breakTime.toString());
+      formData.append('answerTime', timer.toString());
+
+      await uploadWithRetry(
+        `/answers/upload?questionId=${failedUpload.questionId}&userId=${userData.userId}`,
+        formData
+      );
+
+      showSnackbar('Upload berhasil!', 'success');
+
+      setFailedUpload(null);
+
+    } catch (err) {
+      showSnackbar('Retry gagal lagi', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -361,6 +428,7 @@ const RecordInterviews = ({
               <ButtonComponent
                 onClick={() => submitRecord(activeQuestion + 1, 'next')}
                 loading={isLoading}
+                disabled={isLoading}
                 sx={{
                   color: 'white',
                   borderRadius: 2,
@@ -395,6 +463,51 @@ const RecordInterviews = ({
               >
                 Finish
               </ButtonComponent>
+            )}
+            {/* Saat sedang upload */}
+            {isLoading && (
+              <Box display="flex" gap={2}>
+                <ButtonComponent
+                  onClick={cancelUpload}
+                  sx={{ backgroundColor: '#64748B', color: 'white' }}
+                >
+                  Cancel
+                </ButtonComponent>
+              </Box>
+            )}
+
+            {/* Saat gagal upload */}
+            {failedUpload && !isLoading && (
+              <Box display="flex" gap={2}>
+                <ButtonComponent
+                  onClick={resendUpload}
+                  loading={isLoading}
+                  sx={{ 
+                    backgroundColor: '#1976D2',
+                    '&:hover': {
+                      backgroundColor: '#1565C0',
+                    }, 
+                  }}
+                >
+                  Reupload & next
+                </ButtonComponent>
+              </Box>
+            )}
+            {failedUpload && !isLoading && isLastQuestion && isStopped && (
+              <Box display="flex" gap={2}>
+                <ButtonComponent
+                  onClick={resendUpload}
+                  loading={isLoading}
+                  sx={{ 
+                    backgroundColor: '#1976D2',
+                    '&:hover': {
+                      backgroundColor: '#1565C0',
+                    }, 
+                  }}
+                >
+                  Reupload & finish
+                </ButtonComponent>
+              </Box>
             )}
           </Box>
         </Box>
