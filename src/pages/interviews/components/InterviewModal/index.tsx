@@ -12,14 +12,20 @@ const InterviewModal = ({
   open,
   handleClose,
   refetch,
+  interviewId,
+  isEdit = false,
 }: {
   open: boolean;
   handleClose: () => void;
   refetch: () => void;
+  interviewId?: string;
+  isEdit?: boolean;
 }) => {
   const { method, onSubmit, isLoading } = useInterviewModal(
     handleClose,
-    refetch
+    refetch,
+    interviewId,
+    isEdit
   );
 
   useEffect(() => {

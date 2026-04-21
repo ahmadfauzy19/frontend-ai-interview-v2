@@ -183,7 +183,7 @@ const RecordInterviews = ({
   };
 
   // =========================
-  // 🚀 SUBMIT RECORD (FINAL FIX)
+  // SUBMIT RECORD (FINAL FIX)
   // =========================
 
   const submitRecord = async (index: number, type: 'next' | 'finish') => {
@@ -304,9 +304,40 @@ const RecordInterviews = ({
         formData
       );
 
+      setAllQuestion(prev =>
+        prev.map(q =>
+          q.id === failedUpload.questionId ? { ...q, isDone: true } : q
+        )
+      );
+
       showSnackbar('Upload berhasil!', 'success');
 
       setFailedUpload(null);
+
+      // reset timer
+      resetBreakTimer();
+      setTimer(0);
+
+      // lanjut flow (next / finish)
+      if (isLastQuestion) {
+        setInterviewState('END');
+        return;
+      }
+
+      const nextIndex = activeQuestion + 1;
+      setActiveQuestion(nextIndex);
+
+      // init recording baru
+      await clearAllRecordings();
+      await new Promise(res => setTimeout(res, 300));
+
+      const newRecording = await createRecording();
+      if (newRecording) {
+        setRecordId(newRecording.id);
+        await openCamera(newRecording.id);
+      }
+
+      startBreakTimer();
 
     } catch (err) {
       showSnackbar('Retry gagal lagi', 'error');
@@ -424,7 +455,7 @@ const RecordInterviews = ({
               </ButtonComponent>
             )}
 
-            {!isLastQuestion && isStopped && (
+            {!isLastQuestion && isStopped && !failedUpload && (
               <ButtonComponent
                 onClick={() => submitRecord(activeQuestion + 1, 'next')}
                 loading={isLoading}
@@ -483,6 +514,11 @@ const RecordInterviews = ({
                   onClick={resendUpload}
                   loading={isLoading}
                   sx={{ 
+                    color: 'white',
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    paddingX: 3,
                     backgroundColor: '#1976D2',
                     '&:hover': {
                       backgroundColor: '#1565C0',

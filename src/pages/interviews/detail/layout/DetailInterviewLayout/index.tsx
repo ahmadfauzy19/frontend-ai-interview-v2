@@ -56,6 +56,7 @@ const DetailInterviewLayout = ({ children }: { children: React.ReactNode }) => {
     return truncatedText;
   }
 
+  const isCandidate = userData?.role === 'CANDIDATE';
   const { method, candidateList, isLoadingCandidateList , detailInterview} =
     useDetailInterview();
 
@@ -154,43 +155,51 @@ const DetailInterviewLayout = ({ children }: { children: React.ReactNode }) => {
         )}
       </Box>
       <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-        <Grid
-          size={{ xs: 3, lg: 2 }}
-          sx={{ display: 'flex', flexDirection: 'column' }}
-        >
-          <Box
-            display="flex"
-            flexDirection="column"
-            gap={2}
-            padding={2}
-            border={`1px solid ${theme.palette.divider}`}
-            borderRadius={2}
-            flexGrow={1}
+        {!isCandidate && (
+          <Grid
+            size={{ xs: 3, lg: 2 }}
+            sx={{ display: 'flex', flexDirection: 'column' }}
           >
-            <Box>
-              <SelectComponent
-                control={method.control}
-                name="filter"
-                placeholder="Filter by"
-                fullWidth
-                options={filterOptions}
-                startIcon={
-                  <Icon
-                    icon="lucide:filter"
-                    color={theme.palette.text.secondary}
-                  />
-                }
-              />
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap={2}
+              padding={2}
+              border={`1px solid ${theme.palette.divider}`}
+              borderRadius={2}
+              flexGrow={1}
+            >
+              <Box>
+                <SelectComponent
+                  control={method.control}
+                  name="filter"
+                  placeholder="Filter by"
+                  fullWidth
+                  options={filterOptions}
+                  startIcon={
+                    <Icon
+                      icon="lucide:filter"
+                      color={theme.palette.text.secondary}
+                    />
+                  }
+                />
+              </Box>
+
+              {isLoadingCandidateList && <UserResponseCardLoading />}
+
+              {!isLoadingCandidateList &&
+                candidateList.map(item => (
+                  <UserResponseCard key={item.candidateId} data={item} />
+                ))}
             </Box>
-            {isLoadingCandidateList && <UserResponseCardLoading />}
-            {!isLoadingCandidateList &&
-              candidateList.map(item => (
-                <UserResponseCard key={item.candidateId} data={item} />
-              ))}
-          </Box>
-        </Grid>
+          </Grid>
+        )}
+
         <Grid
-          size={{ xs: 9, lg: 10 }}
+          size={{
+            xs: 12,
+            lg: isCandidate ? 12 : 10,
+          }}
           sx={{ display: 'flex', flexDirection: 'column' }}
         >
           {children}

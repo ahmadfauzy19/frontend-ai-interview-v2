@@ -5,11 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import { ButtonComponent } from '../../../../components/ButtonComponent';
 import CopyToClipboardButton from '../CopyToClipboardButton';
 import DeleteInterviewButton from '../DeleteButton';
+import EditButton from '../UpdateButton/indeks';
+import InterviewModal from '../InterviewModal';
+import { useState } from 'react';
 
 const InterviewCard = ({ data, role }: { data: Interviews; role: string }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const currentUrl = window.location.href;
+  const [openEdit, setOpenEdit] = useState(false);
 
   const handleStartInterview = () => {
     window.open(`/interviews/call/${data.id}`, '_blank');
@@ -46,10 +50,18 @@ const InterviewCard = ({ data, role }: { data: Interviews; role: string }) => {
         <CopyToClipboardButton textToCopy={`${currentUrl}/call/${data.id}`} />
 
         {(role === 'ADMIN' || role === 'INTERVIEWER') && (
-          <DeleteInterviewButton
-            interviewId={data.id}
-            onSuccess={() => window.location.reload()}
-          />
+          <>
+            <EditButton
+              onClick={() => setOpenEdit(true)}
+              disabled={!data.isEditable}
+            />
+            
+            <DeleteInterviewButton
+              interviewId={data.id}
+              onSuccess={() => window.location.reload()}
+            />
+
+          </>
         )}
       </Box>
       <Box
@@ -122,6 +134,13 @@ const InterviewCard = ({ data, role }: { data: Interviews; role: string }) => {
           )}
         </Box>
       </Box>
+      <InterviewModal
+        open={openEdit}
+        handleClose={() => setOpenEdit(false)}
+        refetch={() => window.location.reload()}
+        interviewId={data.id}
+        isEdit
+      />
     </Box>
   );
 };

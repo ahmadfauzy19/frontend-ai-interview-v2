@@ -7,6 +7,7 @@ export interface CandidateAnswer {
 }
 
 export interface Answer {
+  participantId: string;
   questionId: string;
   questionText: string;
   answerTranscript: string;
@@ -15,4 +16,5 @@ export interface Answer {
   problemSolvingScore: number | null;
   communicationScore: number | null;
   fileName: string;
+  isValidated: boolean;
 }

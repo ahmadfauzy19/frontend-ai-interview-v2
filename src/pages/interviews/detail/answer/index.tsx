@@ -8,20 +8,43 @@ import {
   Typography,
   useTheme,
   Chip,
+  FormControlLabel,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import DetailInterviewLayout from '../layout/DetailInterviewLayout';
 import useInterviewAnswer from './InterviewAnswer.hooks';
+import TextfieldComponent from '@/components/Form/TextfieldComponent';
+import SwitchComponent from '@/components/Form/SwitchComponent';
 
 const InterviewAnswerPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from;
 
-  const { answerCandidate, isLoading, id, handleDownload, isLoadingDownload } =
-    useInterviewAnswer();
+  const { 
+    answerCandidate,
+    isLoading, 
+    id,
+    isLoadingDownload,
+    editMode,
+    loadingSave,
+    loadingValidate,
+    control,
+    handleCancel,
+    handleDownload,
+    handleEdit,
+    handleSave,
+    handleValidateToggle,
+  } = useInterviewAnswer();
 
   const handleBack = () => {
-    navigate(`/interviews/${id}`);
+    if (from) {
+      navigate(from);
+    } else {
+      // fallback default (admin/interviewer)
+      navigate(`/interviews/${id}`);
+    }
   };
 
   function stringAvatar(name: string) {
@@ -272,15 +295,90 @@ const InterviewAnswerPage = () => {
                       </Typography>
                     </Box>
 
-                    {/* ANSWER */}
+                    {/* ANSWER (SELALU MUNCUL) */}
                     <Box>
                       <Typography fontWeight={700}>
                         Candidate Answer
                       </Typography>
 
-                      <Typography color="text.secondary">
-                        {item.answerTranscript}
-                      </Typography>
+                      {editMode[item.questionId] ? (
+                        <TextfieldComponent
+                          name={`answer_${item.questionId}`}
+                          control={control}
+                          fullWidth
+                          multiline
+                          minRows={4}
+                        />
+                      ) : (
+                        <Typography color="text.secondary">
+                          {item.answerTranscript}
+                        </Typography>
+                      )}
+                    </Box>
+
+                    {/* VALIDATION + ACTION */}
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      mb={1}
+                    >
+                      <FormControlLabel
+                        sx={{ 
+                          gap: 2,
+                         }}
+                        control={
+                          <SwitchComponent
+                            checked={item.isValidated}
+                            onChange={(e) =>
+                              handleValidateToggle(
+                                item.participantId,
+                                item.questionId,
+                                e.target.checked
+                              )
+                            
+                            }
+                            disabled={loadingValidate[item.questionId]}
+                          />
+                        }
+                        label={item.isValidated ? 'Validated' : 'Not Validated'}
+                      />
+
+                      <Box display="flex" gap={1}>
+                        {!item.isValidated && !editMode[item.questionId] && (
+                          <ButtonComponent
+                            size="small"
+                            variant="outlined"
+                            onClick={() =>
+                              handleEdit(item.questionId, item.answerTranscript)
+                            }
+                          >
+                            Edit
+                          </ButtonComponent>
+                        )}
+
+                        {!item.isValidated && editMode[item.questionId] && (
+                          <>
+                            <ButtonComponent
+                              size="small"
+                              variant="contained"
+                              onClick={() => handleSave(item.participantId, item.questionId)}
+                              loading={loadingSave[item.questionId]}
+                            >
+                              Save
+                            </ButtonComponent>
+
+                            <ButtonComponent
+                              size="small"
+                              variant="outlined"
+                              onClick={() => handleCancel(item.questionId)}
+                              disabled={loadingSave[item.questionId]}
+                            >
+                              Cancel
+                            </ButtonComponent>
+                          </>
+                        )}
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
