@@ -4,7 +4,7 @@ import type { TableHeader } from '@/components/Table/TableComponent/TableCompone
 import { Icon } from '@iconify/react';
 import { Box, Tooltip, Typography, useTheme } from '@mui/material';
 import { PieChart } from '@mui/x-charts/PieChart';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import useDetailInterview from './DetailInterview.hooks';
 import type { OverallScore } from './DetailInterview.interfaces';
 import DetailInterviewLayout from './layout/DetailInterviewLayout';
