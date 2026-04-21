@@ -23,4 +23,5 @@ export interface Interviews {
   createdBy: string;
   createdAt: string;
   isAnswered: boolean;
+  isEditable: boolean;
 }

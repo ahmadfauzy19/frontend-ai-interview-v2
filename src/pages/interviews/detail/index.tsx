@@ -19,6 +19,7 @@ import { buildRecommendationChart } from "./components/ChartSummaryCard/buildRec
 import DetailInterviewLoading from "./detailInterviewLoading";
 
 
+
 const InterviewDetailPage = () => {
   const theme = useTheme();
   const { method, handleSortChange, detailInterview, candidateList, summaryRecommandation, isLoadingCandidateList } = useDetailInterview();
@@ -28,6 +29,12 @@ const InterviewDetailPage = () => {
   const handleOpenDetail = () => setOpenDetail(true);
   const handleCloseDetail = () => setOpenDetail(false);
   const navigate = useNavigate();
+
+  const handleGoToAnswer = (candidateId: string) => {
+    navigate(`${currentPath}/answer/${candidateId}`, {
+      state: { from: currentPath },
+    });
+  };
 
   const handleBack = () => {
     navigate(`/interviews`);
@@ -41,21 +48,26 @@ const InterviewDetailPage = () => {
       sx: { width: '30%' },
       labelAlign: 'center',
       render: row => {
-        const r = row as unknown as OverallScore;
-        return (
-          <Box display="flex" gap={1}>
-            <Link to={`${currentPath}/answer/${r.candidateId}`}>
-              <Icon
-                icon="lucide:external-link"
-                width={20}
-                height={20}
-                color={theme.palette.primary.main}
-              />
-            </Link>
-            <Typography fontSize={14}>{r.name}</Typography>
+      const r = row as unknown as OverallScore;
+
+      return (
+        <Box display="flex" gap={1} alignItems="center">
+          <Box
+            onClick={() => handleGoToAnswer(r.candidateId)}
+            sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          >
+            <Icon
+              icon="lucide:external-link"
+              width={20}
+              height={20}
+              color={theme.palette.primary.main}
+            />
           </Box>
-        );
-      },
+
+          <Typography fontSize={14}>{r.name}</Typography>
+        </Box>
+      );
+    }
     },
     {
       key: 'avgTechnicalFundamentalScore',

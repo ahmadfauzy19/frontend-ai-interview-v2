@@ -31,5 +31,12 @@ export const SidebarMenu: SidebarMenuInterface[] = [
     icon: 'mdi:chart-areaspline',
     hidden: false,
     roles: ['ADMIN', 'INTERVIEWER', 'CANDIDATE'],
+  },
+  {
+    title: 'Results Answer',
+    path: '/results',
+    icon: 'mdi:chart-bar',
+    hidden: false,
+    roles: ['CANDIDATE'],
   }
 ];
