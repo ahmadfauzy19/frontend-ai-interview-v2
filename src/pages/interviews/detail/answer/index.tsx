@@ -211,7 +211,10 @@ const InterviewAnswerPage = () => {
           )}
 
           {!isLoading &&
-            answerCandidate?.answers.map((item, index) => (
+            answerCandidate?.answers
+              ?.slice() // biar tidak mutate data asli
+              .sort((a, b) => a.questionNumber - b.questionNumber)
+              .map((item, index) => (
               <Box key={item.questionId} mb={4}>
 
                 <Box
@@ -287,7 +290,7 @@ const InterviewAnswerPage = () => {
                     {/* QUESTION */}
                     <Box>
                       <Typography fontWeight={700}>
-                        Question {index + 1}
+                        Question {item.questionNumber}
                       </Typography>
 
                       <Typography color="text.secondary">
@@ -319,7 +322,6 @@ const InterviewAnswerPage = () => {
                     {/* VALIDATION + ACTION */}
                     <Box
                       display="flex"
-                      justifyContent="space-between"
                       alignItems="center"
                       mb={1}
                     >

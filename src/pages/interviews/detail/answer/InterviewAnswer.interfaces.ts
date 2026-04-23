@@ -10,6 +10,7 @@ export interface Answer {
   participantId: string;
   questionId: string;
   questionText: string;
+  questionNumber: number;
   answerTranscript: string;
   videoUrl: string;
   technicalFundamentalScore: number | null;
