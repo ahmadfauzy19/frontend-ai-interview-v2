@@ -340,7 +340,7 @@ const InterviewAnswerPage = () => {
                               )
                             
                             }
-                            disabled={loadingValidate[item.questionId]}
+                            disabled={loadingValidate[item.questionId] || answerCandidate?.totalScore != null}
                           />
                         }
                         label={item.isValidated ? 'Validated' : 'Not Validated'}
@@ -382,6 +382,16 @@ const InterviewAnswerPage = () => {
                         )}
                       </Box>
                     </Box>
+                        {answerCandidate?.totalScore != null && (
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            mt={0.5}
+                            display="block"
+                          >
+                            Note : Penilaian sudah dilakukan. Jawaban bersifat read-only dan tidak dapat diubah.
+                          </Typography>
+                        )}
                   </Box>
                 </Box>
 
