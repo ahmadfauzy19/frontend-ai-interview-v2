@@ -200,7 +200,7 @@ const RecordInterviews = ({
 
       const videoFile = new File(
         [blobBackup],
-        `${currentQuestion.questionText.replace(/\s+/g, '_')}-${userData.userId}-${Date.now()}.webm`,
+        `${currentQuestion.id.replace(/\s+/g, '_')}-${userData.userId}-${Date.now()}.webm`,
         { type: 'video/webm' }
       );
 
