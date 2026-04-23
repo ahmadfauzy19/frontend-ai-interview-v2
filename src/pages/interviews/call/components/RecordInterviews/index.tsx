@@ -83,7 +83,7 @@ const RecordInterviews = ({
       });
 
     } catch (err: any) {
-      if (err.name === 'CanceledError') {
+      if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
         throw err;
       }
 
@@ -257,7 +257,7 @@ const RecordInterviews = ({
       setFailedUpload({
         blob: blobBackup,
         questionId: currentQuestion.id,
-        fileName: `${currentQuestion.questionText.replace(/\s+/g, '_')}-${userData.userId}-${Date.now()}.webm`
+        fileName: `${currentQuestion.id.replace(/\s+/g, '_')}-${userData.userId}-${Date.now()}.webm`
       });
 
       let errorMessage = 'Upload gagal, coba lagi';
