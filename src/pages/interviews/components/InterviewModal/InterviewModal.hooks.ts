@@ -32,6 +32,8 @@ const useInterviewModal = (
 
         method.reset({
           name: data.name,
+          description: data.description,
+          companyNamePartner: data.companyNamePartner,
           context: data.context,
           objective: data.objective,
           roleTarget: data.roleTarget,
@@ -39,6 +41,7 @@ const useInterviewModal = (
           technology: data.technology,
           purpose: data.purpose,
           number: data.questions?.length || 1,
+          language: data.language,
         });
       } catch (err) {
         console.error('Error fetch detail:', err);

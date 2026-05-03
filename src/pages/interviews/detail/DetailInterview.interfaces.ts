@@ -8,6 +8,8 @@ export interface CandidateInterview {
 export interface DetailInterview {
   id: string;
   name: string;
+  description: string;
+  companyNamePartner: string;
   context: string;
   objective: string;
   roleTarget: string;

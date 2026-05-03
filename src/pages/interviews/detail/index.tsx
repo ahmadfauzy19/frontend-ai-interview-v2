@@ -222,7 +222,7 @@ const InterviewDetailPage = () => {
           {[
             {
               label: 'Description',
-              value: detailInterview?.context,
+              value: detailInterview?.description,
               icon: 'mdi:text-box-outline',
             },
             {

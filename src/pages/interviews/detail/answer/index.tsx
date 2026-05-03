@@ -340,7 +340,7 @@ const InterviewAnswerPage = () => {
                               )
                             
                             }
-                            disabled={loadingValidate[item.questionId] || answerCandidate?.totalScore != null}
+                            disabled={loadingValidate[item.questionId] || answerCandidate?.totalScore != null || item.isValidated == true}
                           />
                         }
                         label={item.isValidated ? 'Validated' : 'Not Validated'}

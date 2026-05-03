@@ -1,5 +1,7 @@
 export interface InterviewForm {
   name: string;
+  description: string;
+  companyNamePartner: string;
   context: string;
   objective: string;
   purpose: string;
@@ -8,11 +10,14 @@ export interface InterviewForm {
   levelTarget: string;
   technology: string;
   number: number;
+  language: string;
 }
 
 export interface Interviews {
   id: string;
   name: string;
+  description: string;
+  companyNamePartner: string;
   context: string;
   objective: string;
   roleTarget: string;
@@ -24,4 +29,5 @@ export interface Interviews {
   createdAt: string;
   isAnswered: boolean;
   isEditable: boolean;
+  language: string;
 }

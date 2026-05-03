@@ -8,6 +8,11 @@ import { purposeOptions } from './InterviewModal.const';
 import useInterviewModal from './InterviewModal.hooks';
 import { Icon } from '@iconify/react';
 
+const languageOptions = [
+  { label: 'Indonesia', value: 'IN' },
+  { label: 'English', value: 'EN' },
+];
+
 const InterviewModal = ({
   open,
   handleClose,
@@ -29,7 +34,9 @@ const InterviewModal = ({
   );
 
   useEffect(() => {
-    method.reset();
+    if (!isEdit) {
+      method.reset();
+    }
   }, [open]);
 
   return (
@@ -41,8 +48,6 @@ const InterviewModal = ({
         <form onSubmit={method.handleSubmit(onSubmit)}>
           <Stack spacing={4} width={{ xs: '90vw', md: 800 }}>
             <Grid container spacing={4}>
-              
-              {/* Interview Name */}
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextfieldComponent
                   control={method.control}
@@ -51,6 +56,30 @@ const InterviewModal = ({
                   placeholder="Name of the Interview"
                   required
                   fullWidth
+                />
+              </Grid>
+
+              {/* Company */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextfieldComponent
+                  control={method.control}
+                  name="companyNamePartner"
+                  label="Company"
+                  placeholder="Company name"
+                  fullWidth
+                />
+              </Grid>
+
+              {/* Description */}
+              <Grid size={{ xs: 12 }}>
+                <TextfieldComponent
+                  control={method.control}
+                  name="description"
+                  label="Description"
+                  placeholder="Short description"
+                  fullWidth
+                  multiline
+                  minRows={3}
                 />
               </Grid>
 
@@ -67,8 +96,21 @@ const InterviewModal = ({
                 />
               </Grid>
 
+              {/* Language */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <AutocompleteComponent
+                  control={method.control}
+                  name="language"
+                  label="Language"
+                  placeholder="Select language"
+                  required
+                  fullWidth
+                  options={languageOptions}
+                />
+              </Grid>
+
               {/* Context */}
-              <Grid size={{ xs: 12, }}>
+              <Grid size={{ xs: 12 }}>
                 <TextfieldComponent
                   control={method.control}
                   name="context"
@@ -97,7 +139,7 @@ const InterviewModal = ({
                 />
               </Grid>
 
-              {/* Role & Level */}
+              {/* Role Target */}
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextfieldComponent
                   control={method.control}
@@ -109,6 +151,7 @@ const InterviewModal = ({
                 />
               </Grid>
 
+              {/* Level Target */}
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextfieldComponent
                   control={method.control}
@@ -120,7 +163,7 @@ const InterviewModal = ({
                 />
               </Grid>
 
-              {/* Number & Technology */}
+              {/* Number */}
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextfieldComponent
                   control={method.control}
@@ -133,6 +176,7 @@ const InterviewModal = ({
                 />
               </Grid>
 
+              {/* Technology */}
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextfieldComponent
                   control={method.control}
@@ -160,6 +204,7 @@ const InterviewModal = ({
               </Grid>
 
             </Grid>
+
           </Stack>
         </form>
       }
