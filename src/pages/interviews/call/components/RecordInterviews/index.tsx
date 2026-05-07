@@ -1,41 +1,48 @@
+import axiosUtils from '@/utils/axiosUtils';
 import { ButtonComponent } from '@/components/ButtonComponent';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useSnackbar } from '@/context/snackbar/SnackbarContext';
-import axiosUtils from '@/utils/axiosUtils';
 import { Icon } from '@iconify/react';
 import { Box, Typography } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecordWebcam } from 'react-record-webcam';
 import type { InterviewState, Question } from '../../CallInterview.interfaces';
+import { useRecordInterview } from './recordInterview.hooks';
 
 const RecordInterviews = ({
   questions,
   setInterviewState,
+  interviewId
 }: {
   questions: Question[];
   setInterviewState: (state: InterviewState) => void;
+  interviewId: string;
 }) => {
+  const { userData } = useAuth();
+  const { showSnackbar } = useSnackbar();
+
+  const {
+    timer,
+    breakTime,
+    isLoading,
+    failedUpload,
+    setIsLoading,
+    setFailedUpload,
+    startTimer,
+    stopTimer,
+    startBreakTimer,
+    stopBreakTimer,
+    resetBreakTimer,
+    formatTimer,
+    uploadWithRetry,
+    cancelUpload,
+    abortControllerRef,
+  } = useRecordInterview(showSnackbar);
+
   const [allQuestion, setAllQuestion] = useState<Question[]>(questions);
   const [activeQuestion, setActiveQuestion] = useState(1);
   const [currentQuestion, setCurrentQuestion] = useState<Question>(questions[0]);
   const [recordId, setRecordId] = useState('');
-  const { userData } = useAuth();
-  const { showSnackbar } = useSnackbar();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [timer, setTimer] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const [breakTime, setBreakTime] = useState(0);
-  const breakTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const [failedUpload, setFailedUpload] = useState<{
-        blob: Blob;
-        questionId: string;
-        fileName: string;
-      } | null>(null);
-
-  const abortControllerRef = useRef<AbortController | null>(null);
 
   const {
     createRecording,
@@ -52,7 +59,7 @@ const RecordInterviews = ({
   const isLastQuestion = activeQuestion === questions.length;
 
   // =========================
-  // 🧠 UTIL FUNCTIONS
+  // UTIL
   // =========================
 
   const stopMediaStream = (recording: any) => {
@@ -70,78 +77,50 @@ const RecordInterviews = ({
     }
   };
 
-  const uploadWithRetry = async (
-    url: string,
-    formData: FormData,
-    retries = 2
-  ): Promise<any> => {
+  // =========================
+  // Fetch list answered 
+  // =========================
+  useEffect(() => {
+  const initAnswered = async () => {
     try {
-      abortControllerRef.current = new AbortController();
+      const res = await axiosUtils.get(
+        `/answers/list-answered/${userData.userId}/${interviewId}`
+      );
 
-      return await axiosUtils.post(url, formData, {
-        signal: abortControllerRef.current.signal,
+      const answeredList = res.data;
+
+      // mapping answered → isDone
+      const updatedQuestions = questions.map(q => {
+        const isDone = answeredList.some(
+          (a: any) => a.questionId === q.id
+        );
+        return { ...q, isDone };
       });
 
-    } catch (err: any) {
-      if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
-        throw err;
+      setAllQuestion(updatedQuestions);
+
+      // cari pertanyaan pertama yang belum dikerjakan
+      const nextIndex = updatedQuestions.findIndex(q => !q.isDone);
+
+      if (nextIndex !== -1) {
+        setActiveQuestion(nextIndex + 1);
+      } else {
+        // semua sudah selesai
+        setInterviewState('END');
       }
 
-      if (retries > 0) {
-        await new Promise(r => setTimeout(r, 1000));
-        return uploadWithRetry(url, formData, retries - 1);
-      }
-
-      throw err;
+    } catch (err) {
+      console.error('Failed fetch answered list', err);
     }
   };
 
-  const cancelUpload = () => {
-    abortControllerRef.current?.abort();
-    showSnackbar('Upload dibatalkan', 'info');
-  };
-
-  const startTimer = () => {
-    setTimer(0);
-    timerRef.current = setInterval(() => {
-      setTimer(prev => prev + 1);
-    }, 1000);
-  };
-
-  const stopTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  };
-
-  const startBreakTimer = () => {
-    if (breakTimerRef.current) return;
-    breakTimerRef.current = setInterval(() => {
-      setBreakTime(prev => prev + 1);
-    }, 1000);
-  };
-
-  const stopBreakTimer = () => {
-    if (breakTimerRef.current) {
-      clearInterval(breakTimerRef.current);
-      breakTimerRef.current = null;
-    }
-  };
-
-  const resetBreakTimer = () => {
-    stopBreakTimer();
-    setBreakTime(0);
-  };
-
-  const formatTimer = (seconds: number) => {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${m}m ${s}s`;
-  };
+  if (userData?.userId && questions?.length) {
+    initAnswered();
+  }
+}, [userData?.userId, questions]);
 
   // =========================
-  // 🚀 INIT
+  // INIT
   // =========================
 
   useEffect(() => {
@@ -167,7 +146,7 @@ const RecordInterviews = ({
   };
 
   // =========================
-  // 🎥 RECORD CONTROL
+  // RECORD
   // =========================
 
   const recordVideo = async () => {
@@ -183,7 +162,7 @@ const RecordInterviews = ({
   };
 
   // =========================
-  // SUBMIT RECORD (FINAL FIX)
+  // SUBMIT
   // =========================
 
   const submitRecord = async (index: number, type: 'next' | 'finish') => {
@@ -212,13 +191,11 @@ const RecordInterviews = ({
 
       const formData = new FormData();
       formData.append('video', videoFile);
+      formData.append('questionId', currentQuestion.id);
       formData.append('breakTime', breakTime.toString());
       formData.append('answerTime', timer.toString());
 
-      await uploadWithRetry(
-        `/answers/upload?questionId=${currentQuestion.id}&userId=${userData.userId}`,
-        formData
-      );
+      await uploadWithRetry(`/answers/upload`, formData);
 
       setAllQuestion(prev =>
         prev.map(q =>
@@ -227,7 +204,6 @@ const RecordInterviews = ({
       );
 
       resetBreakTimer();
-      setTimer(0);
 
       await clearAllRecordings();
       await new Promise(res => setTimeout(res, 300));
@@ -249,6 +225,7 @@ const RecordInterviews = ({
 
     } catch (error: any) {
       console.error(error);
+
       if (error.name === 'CanceledError') {
         showSnackbar('Upload dibatalkan user', 'info');
         return;
@@ -274,7 +251,7 @@ const RecordInterviews = ({
       }
 
       showSnackbar(errorMessage, 'error');
-      return; // penting: jangan clear biar bisa retry
+      return;
 
     } finally {
       setIsLoading(false);
@@ -314,11 +291,8 @@ const RecordInterviews = ({
 
       setFailedUpload(null);
 
-      // reset timer
       resetBreakTimer();
-      setTimer(0);
 
-      // lanjut flow (next / finish)
       if (isLastQuestion) {
         setInterviewState('END');
         return;
@@ -327,7 +301,6 @@ const RecordInterviews = ({
       const nextIndex = activeQuestion + 1;
       setActiveQuestion(nextIndex);
 
-      // init recording baru
       await clearAllRecordings();
       await new Promise(res => setTimeout(res, 300));
 
@@ -339,7 +312,7 @@ const RecordInterviews = ({
 
       startBreakTimer();
 
-    } catch (err) {
+    } catch {
       showSnackbar('Retry gagal lagi', 'error');
     } finally {
       setIsLoading(false);

@@ -138,6 +138,7 @@ const InterviewsPage = () => {
           border: '1px solid #e5e7eb',
           borderRadius: 2,
           p: 2,
+          pb: 2,
           backgroundColor: '#fff',
         }}
       >

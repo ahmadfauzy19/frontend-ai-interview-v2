@@ -17,7 +17,7 @@ const CreateInterviewCard = ({ handleClick }: { handleClick?: () => void }) => {
         padding: 3,
         cursor: 'pointer',
         '&:hover': {
-          scale: 1.1,
+          scale: 1.02,
         },
         transition: 'all',
         animationDuration: '300ms',

@@ -64,6 +64,7 @@ const CallInterviewPage = () => {
           <RecordInterviews
             questions={interview?.questions || []}
             setInterviewState={setInterviewState}
+            interviewId={interview?.id || ''}
           />
         )}
         {interviewState === 'END' && <EndInterviews />}

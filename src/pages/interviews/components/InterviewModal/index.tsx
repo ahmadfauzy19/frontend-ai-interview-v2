@@ -66,6 +66,7 @@ const InterviewModal = ({
                   name="companyNamePartner"
                   label="Company"
                   placeholder="Company name"
+                  required
                   fullWidth
                 />
               </Grid>
@@ -79,6 +80,7 @@ const InterviewModal = ({
                   placeholder="Short description"
                   fullWidth
                   multiline
+                  required
                   minRows={3}
                 />
               </Grid>
